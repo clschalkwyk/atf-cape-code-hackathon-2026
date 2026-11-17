@@ -7,27 +7,27 @@
    ────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Brand palette (from Cappy can — adjust if final values differ) */
-  --brand-primary: #f26522;      /* Cappy orange */
-  --brand-primary-dark: #c44a14;
-  --brand-secondary: #ffd200;    /* Cappy yellow */
-  --brand-accent: #e2231a;       /* Cappy red */
-  --brand-light: #fff4ec;        /* warm peach tint */
-  --brand-surface: #f8f5f2;      /* warm off-white */
+  /* Brand palette — extracted from Cappy can, adapted for agriculture */
+  --brand-primary: #385819;        /* Leaf green — headers, primary buttons */
+  --brand-primary-dark: #284012;   /* Darker green for hover/active */
+  --brand-secondary: #b65512;      /* Harvest orange — secondary buttons, warm accents */
+  --brand-accent: #a72503;         /* Bright orange-red — alerts, warnings, strong CTA */
+  --brand-light: #f4f1e8;          /* Soft off-white background */
+  --brand-surface: #e6d9b4;        /* Warm beige — cards, highlight surfaces */
 
   /* Neutrals */
-  --ink: #171717;
+  --ink: #2a2822;                  /* Deep charcoal — main text, headings */
   --ink-soft: #555;
-  --ink-muted: #626262;
-  --line: #dedede;
+  --ink-muted: #7a6b4d;            /* Muted brown — secondary labels, borders */
+  --line: #c8cbc2;                 /* Soft cream — borders */
   --surface: #fff;
-  --surface-alt: #f2f2f2;
+  --surface-alt: #f4f1e8;
 
   /* Semantic */
-  --color-low: #b8541a;
-  --color-moderate: #c69214;
-  --color-high: #2d8a3e;
-  --color-error: #c0392b;
+  --color-low: #a72503;            /* Alert red — low evidence */
+  --color-moderate: #b65512;       /* Harvest orange — moderate evidence */
+  --color-high: #385819;           /* Leaf green — high evidence */
+  --color-error: #a72503;          /* Alert red — errors */
 
   /* Radii */
   --r-screen: 28px;

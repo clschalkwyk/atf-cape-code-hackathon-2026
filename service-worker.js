@@ -1,4 +1,4 @@
-const CACHE_NAME = "tyala-africa-v2";
+const CACHE_NAME = "tyala-africa-v3";
 const APP_SHELL = [
   "./",
   "./index.html",

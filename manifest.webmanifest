@@ -6,8 +6,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#f4f1e8",
+  "theme_color": "#385819",
   "categories": ["agriculture", "productivity"],
   "icons": [
     {
