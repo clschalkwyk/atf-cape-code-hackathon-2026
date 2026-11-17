@@ -4,96 +4,103 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#385819">
-    <meta name="description" content="Tyala Africa — historical crop planting evidence for your location, from public agricultural records.">
+    <meta name="description" content="Historical crop evidence for your farm: planting windows and local prevalence from recorded data.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Tyala Africa">
+    <title>Tyala Africa | Historical crop evidence</title>
     <link rel="manifest" href="./manifest.webmanifest">
-    <link rel="icon" href="./assets/farmer-home.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="./assets/farmer-home.svg">
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="./assets/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./styles.css">
-    <title>Tyala Africa</title>
+    <script src="./config.js"></script>
+    <script type="module" src="./app.mjs"></script>
   </head>
   <body>
-    <main class="screen" aria-labelledby="screen-title">
-      <header class="screen-header">
-        <p id="screen-title" class="screen-label">TYALA AFRICA</p>
-        <button class="menu-button" type="button" aria-label="About" title="About">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 7h16M4 12h16M4 17h16"></path>
-          </svg>
-        </button>
-      </header>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Tyala Africa home">
+        <img src="./assets/icon.svg" alt="" width="34" height="34">
+        <span>Tyala Africa</span>
+      </a>
+      <span class="topbar-note">GROW WITH THE SEASON</span>
+    </header>
 
-      <section class="weather-card" aria-labelledby="greeting">
-        <p class="date" id="date"></p>
-        <h1 id="greeting">Hello, Farmer</h1>
-        <p class="location" id="location-display">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
-            <circle cx="12" cy="10" r="2.5"></circle>
-          </svg>
-          <span id="location-label">Set your location to begin</span>
-        </p>
-        <div class="weather-summary">
-          <p class="temperature" id="season-text">—</p>
-          <p class="season" id="hemisphere-text"></p>
-        </div>
-        <p class="weather-note">Historical evidence only — no live weather or farm-level data is assessed.</p>
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">YOUR FARM, YOUR NEXT SEASON</p>
+        <h1 id="page-title">What has grown<br class="desktop-break"> well near you?</h1>
+        <p class="intro-copy">Explore planting windows and local crop prevalence grounded in recorded local data.</p>
       </section>
 
-      <section class="crop-section" aria-labelledby="crop-heading">
-        <h2 id="crop-heading">What should I plant?</h2>
-        <p class="intro">We'll use your location to find historical planting evidence for crops grown in your area.</p>
+      <section class="workspace" aria-label="Crop evidence planner">
+        <form id="recommendation-form" novalidate>
+          <fieldset class="step">
+            <legend><span class="step-number">01</span><span>Choose your crop</span></legend>
+            <p class="step-hint">Pick one crop from the catalog. The evidence shown is historical, not a forecast.</p>
+            <label for="crop-name">Add the crop you are interested in</label>
+            <div class="crop-entry">
+              <input id="crop-name" type="text" maxlength="80" autocomplete="off"
+                placeholder="e.g. maize" list="crop-options"
+                aria-describedby="crop-preference-help crop-preference-error">
+              <datalist id="crop-options"></datalist>
+              <button id="add-crop" class="add-crop-button" type="button">Add crop</button>
+            </div>
+            <p id="crop-preference-help" class="field-help">Start typing to see catalog suggestions, then add the crop to continue.</p>
+            <p id="crop-preference-error" class="inline-error" role="alert" hidden></p>
+            <ul id="crop-preference-list" class="crop-preferences" aria-label="Selected crop"
+              aria-live="polite" aria-relevant="additions removals"></ul>
+          </fieldset>
 
-        <div class="location-input" id="location-input-section" hidden>
-          <label for="address-input" class="input-label">Enter your location</label>
-          <input type="text" id="address-input" class="text-input" placeholder="e.g. Pretoria, South Africa" autocomplete="off" spellcheck="false">
-          <div class="location-actions">
-            <button class="ghost-button" type="button" id="use-geolocation-btn">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8Z"></path>
-                <circle cx="12" cy="10" r="2.5"></circle>
-              </svg>
-              <span>Use my GPS</span>
+          <fieldset class="step period-step">
+            <legend><span class="step-number">02</span><span>Your location</span></legend>
+            <p class="step-hint">Historical records depend on the area near your farm.</p>
+            <label for="address">Address, village, or district</label>
+            <input id="address" name="address" type="text" autocomplete="street-address"
+              maxlength="300" placeholder="e.g. district or nearest town" aria-describedby="location-help location-error">
+            <p id="location-help" class="field-help">Addresses are resolved to coordinates with OpenStreetMap Nominatim; only coordinates are sent to the evidence service and nothing is saved in this app.</p>
+            <button id="use-location" class="location-button" type="button">
+              <span aria-hidden="true">◎</span> Use my device location
             </button>
-            <button class="ghost-button" type="button" id="set-address-btn">Set address</button>
-          </div>
-        </div>
+            <p id="location-error" class="inline-error" role="alert" hidden></p>
+          </fieldset>
 
-        <div class="crop-picker" aria-label="Choose a crop">
-          <div class="crop-search">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="11" cy="11" r="7"></circle>
-              <path d="m20 20-3-3"></path>
-            </svg>
-            <input type="search" id="crop-search" class="crop-search-input"
-                   placeholder="Search crops…" autocomplete="off"
-                   aria-label="Search crops" spellcheck="false">
-          </div>
-          <div class="crop-list" id="crop-list" role="listbox" aria-label="Available crops">
-            <p class="crop-list-loading">Loading crops…</p>
-          </div>
-        </div>
+          <button class="submit-button" type="submit">
+            <span>Find historical evidence</span><span aria-hidden="true">↗</span>
+          </button>
+          <p class="privacy-note"><span aria-hidden="true">⌑</span> Your precise location is used only for this request.</p>
+        </form>
 
-        <button class="submit-button" type="button" id="submit-button" disabled>
-          <span>Find historical evidence</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 12h14m-6-6 6 6-6 6"></path>
-          </svg>
-        </button>
-        <p class="interaction-message" role="status" aria-live="polite" id="interaction-message"></p>
+        <aside class="season-card" aria-label="A note about recommendations">
+          <div class="sun-mark" aria-hidden="true">✳</div>
+          <p class="card-eyebrow">A THOUGHTFUL START</p>
+          <h2>Every farm is different.</h2>
+          <p>This evidence reflects historical records, not a promise of harvest. Local knowledge matters too.</p>
+          <div class="card-rule"></div>
+          <p class="card-foot"><span aria-hidden="true">✦</span> Evidence-aware, never a guarantee.</p>
+        </aside>
       </section>
 
-      <section class="results-section" id="results-section" hidden aria-live="polite" aria-atomic="true"></section>
+      <section id="status-panel" class="status-panel" role="status" aria-live="polite" aria-atomic="true" hidden>
+        <span id="status-icon" class="status-icon" aria-hidden="true"></span>
+        <div><h2 id="status-title"></h2><p id="status-message"></p></div>
+      </section>
 
-      <dialog class="about-dialog" id="about-dialog">
-        <article>
-          <h2>About Tyala Africa</h2>
-          <p>Tyala Africa summarises <strong>historical</strong> crop evidence from public agricultural records for your area. It does <strong>not</strong> provide live weather, farm-level recommendations, yield predictions, or future forecasts.</p>
-          <p>Planting windows come from historical planting calendars. Prevalence is a share of reported cropped area. Both describe what was recorded in the past, not what is best or suitable for your farm.</p>
-          <p><button type="button" id="close-dialog" class="ghost-button">Close</button></p>
-        </article>
-      </dialog>
+      <section id="results" class="results" aria-labelledby="results-title" hidden>
+        <div class="results-heading">
+          <div>
+            <p class="eyebrow">YOUR EVIDENCE SUMMARY</p>
+            <h2 id="results-title">Historical evidence for your crop</h2>
+          </div>
+          <p class="rank-note">Historical records · not a yield estimate</p>
+        </div>
+        <div id="freshness" class="freshness"></div>
+        <div id="recommendation-list" class="recommendation-list"></div>
+        <p id="uncertainty" class="uncertainty"></p>
+        <p class="results-footer">Compare this evidence with local agricultural advice and your own farm experience.</p>
+      </section>
     </main>
-    <script src="./config.js" defer></script>
-    <script src="./app.js" defer></script>
+    <footer><span>TYALA AFRICA</span><span>Built for better-informed planting decisions.</span></footer>
   </body>
 </html>

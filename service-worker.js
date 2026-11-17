@@ -1,67 +1,55 @@
-const CACHE_NAME = "tyala-africa-v3";
+const CACHE_NAME = "tyala-shell-v7";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
-  "./app.js",
-  "./config.js",
+  "./app.mjs",
+  "./recommendations.mjs",
   "./crops.json",
   "./manifest.webmanifest",
-  "./assets/farmer-home.svg",
+  "./assets/icon.svg",
+  "./assets/icon-192.png",
+  "./assets/icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)),
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) =>
-      Promise.all(
-        cacheNames
-          .filter((cacheName) => cacheName !== CACHE_NAME)
-          .map((cacheName) => caches.delete(cacheName)),
-      ),
-    ),
+    caches.keys().then((keys) => Promise.all(
+      keys.filter((key) =>
+        (key.startsWith("fieldnote-shell-") || key.startsWith("tyala-shell-")) &&
+        key !== CACHE_NAME
+      )
+        .map((key) => caches.delete(key))
+    ))
   );
   self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
+  const url = new URL(request.url);
+  if (request.method !== "GET" || url.origin !== self.location.origin ||
+      url.pathname.endsWith("/config.js")) return;
 
-  // Never cache POST requests or non-GET methods.
-  if (request.method !== "GET") return;
-
-  // Network-first for same-origin navigation; cache-first for static assets.
   if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-          return response;
-        })
-        .catch(() => caches.match(request).then((r) => r || caches.match("./"))),
-    );
+    event.respondWith(fetch(request).catch(() => caches.match("./index.html")));
     return;
   }
 
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      return (
-        cached ||
-        fetch(request).then((response) => {
-          if (response.ok && response.type === "basic") {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-          }
-          return response;
-        })
-      );
-    }),
-  );
+  if (APP_SHELL.some((path) => new URL(path, self.location.href).pathname === url.pathname)) {
+    event.respondWith(caches.match(request).then((cached) =>
+      cached || fetch(request).then((response) => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+        }
+        return response;
+      })
+    ));
+  }
 });
