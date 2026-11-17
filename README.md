@@ -82,6 +82,20 @@ Trimmed response (Nairobi, Kenya; first two of the returned options):
 }
 ```
 
+## Try it — tested locations
+
+`POST /v1/recommendations` with a location and get the crop options list back; the results below were captured live against the running API:
+
+| Location | Coords | Result |
+|---|---|---|
+| Nairobi, Kenya | -1.2864, 36.8172 | 18 crops — Banana, Beans (mixed) 35 records, Cabbage, Cassava, Coffee |
+| Kano, Nigeria | 12.0022, 8.5920 | 16 crops — Cassava (13), Cotton, Cowpea, Groundnuts, Maize (25 records each) |
+| Ouagadougou, Burkina Faso | 12.3714, -1.5198 | 12 crops — Bambara groundnut (39), Cotton (27), Cowpea (39), Groundnuts (40) |
+| Accra, Ghana | 5.6037, -0.1870 | 4 crops — Banana (2), Cassava (26), Maize (27), Rice (27) |
+| Kampala, Uganda | 0.3476, 32.5825 | 7 crops — Banana, Beans (mixed), Cassava, Groundnuts |
+
+Cairo, Egypt (30.0444, 31.2357) and Lilongwe, Malawi (-13.9626, 33.7741) return an honest `unsupported_location` state — outside the HarvestStat v1.2 coverage index.
+
 ## Architecture
 
 - **API** — `scripts/api_server.py`: a zero-dependency Python API (standard library only) with 23 passing tests. Coordinates → FNID is plain JSON plus point-in-polygon geometry — no spatial database or runtime data service.
