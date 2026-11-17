@@ -13,8 +13,8 @@
   "use strict";
 
   if (!window.CROP_API_BASE_URL) {
-    // Default to same-origin; change this for your deployment.
-    window.CROP_API_BASE_URL = "";
+    // Default to the deployed API; override for local development.
+    window.CROP_API_BASE_URL = "https://crop-advisory-api-production.up.railway.app";
   }
 
   window.CROP_API_ENDPOINT =

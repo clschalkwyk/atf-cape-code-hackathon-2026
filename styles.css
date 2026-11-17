@@ -340,6 +340,116 @@ button {
   color: var(--brand-primary-dark);
 }
 
+/* ── Crop picker ──────────────────────────────────────────────────────── */
+
+.crop-picker {
+  margin-bottom: 4px;
+}
+
+.crop-search {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.crop-search svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--ink-muted);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.crop-search-input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font: inherit;
+  font-size: 16px;
+  background: var(--surface);
+  color: var(--ink);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.crop-search-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.crop-search-input:focus {
+  outline: 3px solid var(--brand-primary);
+  outline-offset: 1px;
+  border-color: var(--brand-primary);
+}
+
+.crop-list {
+  max-height: 280px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  padding: 6px;
+  scroll-behavior: smooth;
+}
+
+.crop-list-loading,
+.crop-list-empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--ink-muted);
+  font-size: 15px;
+}
+
+.crop-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: var(--r-small);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--t-fast);
+}
+
+.crop-option:hover {
+  background: var(--surface-alt);
+}
+
+.crop-option[aria-selected="true"] {
+  background: var(--brand-light);
+  color: var(--brand-primary-dark);
+  font-weight: 500;
+}
+
+.crop-option .crop-check {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  opacity: 0;
+  fill: none;
+  stroke: var(--brand-primary);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.5;
+}
+
+.crop-option[aria-selected="true"] .crop-check {
+  opacity: 1;
+}
+
 /* ── Submit button ──────────────────────────────────────────────────────── */
 
 .submit-button {

@@ -58,31 +58,19 @@
           </div>
         </div>
 
-        <div class="category-grid" aria-label="Choose a crop">
-          <button class="category" type="button" aria-pressed="false" data-crop-id="maize" data-crop-label="Maize">
-            <svg viewBox="0 0 32 32" aria-hidden="true">
-              <path d="M7 25 25 7M10 22l-3-3m7-1-4-4m8-1-4-4m8 16-3-3m-2 0-4-4m9-4-3-3M5 27c4-1 7-3 10-6s5-6 7-10c1-2 4-4 6-4-1 4-2 7-4 10-3 5-8 10-19 10Z"></path>
+        <div class="crop-picker" aria-label="Choose a crop">
+          <div class="crop-search">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="m20 20-3-3"></path>
             </svg>
-            <span>Maize</span>
-          </button>
-          <button class="category" type="button" aria-pressed="false" data-crop-id="vegetables" data-crop-label="Vegetables">
-            <svg viewBox="0 0 32 32" aria-hidden="true">
-              <path d="M16 27V14m0 4c-6 0-9-3-9-8 6 0 9 3 9 8Zm0-3c0-6 3-9 9-9 0 6-3 9-9 9Zm-6 12h12"></path>
-            </svg>
-            <span>Vegetables</span>
-          </button>
-          <button class="category" type="button" aria-pressed="false" data-crop-id="legumes" data-crop-label="Legumes">
-            <svg viewBox="0 0 32 32" aria-hidden="true">
-              <path d="M26 6C15 6 7 11 7 20c0 4 3 6 6 5 8-2 13-10 13-19ZM6 27c4-6 8-10 15-14"></path>
-            </svg>
-            <span>Legumes</span>
-          </button>
-          <button class="category" type="button" aria-pressed="false" data-crop-id="fruit-and-trees" data-crop-label="Fruit &amp; trees">
-            <svg viewBox="0 0 32 32" aria-hidden="true">
-              <path d="M8 26v-5a4 4 0 0 1-1-8 6 6 0 0 1 12 0 4 4 0 0 1-1 8v5m-5-7v7m10 0V13l-3 2 3-6 3 6-3-2v13m-4 0h8"></path>
-            </svg>
-            <span>Fruit &amp; trees</span>
-          </button>
+            <input type="search" id="crop-search" class="crop-search-input"
+                   placeholder="Search crops…" autocomplete="off"
+                   aria-label="Search crops" spellcheck="false">
+          </div>
+          <div class="crop-list" id="crop-list" role="listbox" aria-label="Available crops">
+            <p class="crop-list-loading">Loading crops…</p>
+          </div>
         </div>
 
         <button class="submit-button" type="button" id="submit-button" disabled>

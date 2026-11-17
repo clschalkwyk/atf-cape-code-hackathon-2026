@@ -14,7 +14,8 @@
     location: null,       // { latitude, longitude } or { address }
     locationLabel: null,  // human-readable string
     cropId: null,
-    cropLabel: null,
+    cropName: null,
+    crops: [],            // full crop list from crops.json
     loading: false,
   };
 
@@ -32,7 +33,8 @@
     addressInput: $("#address-input"),
     useGeolocationBtn: $("#use-geolocation-btn"),
     setAddressBtn: $("#set-address-btn"),
-    categories: [].slice.call(document.querySelectorAll(".category")),
+    cropSearch: $("#crop-search"),
+    cropList: $("#crop-list"),
     submitButton: $("#submit-button"),
     interactionMessage: $("#interaction-message"),
     resultsSection: $("#results-section"),
@@ -142,22 +144,68 @@
     showMessage("");
   }
 
-  // ── Crop selection ────────────────────────────────────────────────────────
+  // ── Crop list ──────────────────────────────────────────────────────────────
 
-  function selectCategory(btn) {
-    var pressed = btn.getAttribute("aria-pressed") === "true";
-    // Deselect all
-    els.categories.forEach(function (c) {
-      c.setAttribute("aria-pressed", "false");
-    });
-    if (!pressed) {
-      btn.setAttribute("aria-pressed", "true");
-      state.cropId = btn.dataset.cropId;
-      state.cropLabel = btn.dataset.cropLabel;
-    } else {
-      state.cropId = null;
-      state.cropLabel = null;
+  function loadCrops() {
+    fetch("./crops.json")
+      .then(function (r) { return r.json(); })
+      .then(function (crops) {
+        state.crops = crops;
+        renderCropList("");
+      })
+      .catch(function () {
+        els.cropList.innerHTML =
+          '<p class="crop-list-empty">Could not load the crop list. Check your connection.</p>';
+      });
+  }
+
+  function renderCropList(query) {
+    var q = query.trim().toLowerCase();
+    var filtered = state.crops;
+    if (q) {
+      filtered = state.crops.filter(function (c) {
+        return c.name.toLowerCase().indexOf(q) !== -1;
+      });
     }
+
+    if (!filtered.length) {
+      els.cropList.innerHTML =
+        '<p class="crop-list-empty">No crops match "' + escapeHtml(query) + '".</p>';
+      return;
+    }
+
+    var html = filtered.map(function (c) {
+      var selected = c.id === state.cropId;
+      return '<button type="button" class="crop-option" role="option"' +
+        ' aria-selected="' + selected + '"' +
+        ' data-crop-id="' + escapeHtml(c.id) + '"' +
+        ' data-crop-name="' + escapeHtml(c.name) + '">' +
+        '<svg class="crop-check" viewBox="0 0 24 24" aria-hidden="true">' +
+        '<path d="M5 12l5 5L20 7"></path></svg>' +
+        "<span>" + escapeHtml(c.name) + "</span>" +
+        "</button>";
+    }).join("");
+
+    els.cropList.innerHTML = html;
+
+    // Wire up click handlers
+    [].slice.call(els.cropList.querySelectorAll(".crop-option")).forEach(function (btn) {
+      btn.addEventListener("click", function () { selectCrop(btn); });
+    });
+  }
+
+  function selectCrop(btn) {
+    var id = btn.dataset.cropId;
+    // Toggle off if clicking the already-selected crop
+    if (state.cropId === id) {
+      state.cropId = null;
+      state.cropName = null;
+    } else {
+      state.cropId = id;
+      state.cropName = btn.dataset.cropName;
+    }
+    // Re-render to update selection highlight
+    renderCropList(els.cropSearch.value);
     updateSubmitButton();
   }
 
@@ -174,6 +222,36 @@
 
   // ── API call ───────────────────────────────────────────────────────────────
 
+  // Resolve state.location to { latitude, longitude }.
+  // If coordinates are already set (geolocation), return them directly.
+  // If an address was entered, geocode it via OpenStreetMap Nominatim.
+  function resolveLocation() {
+    if (state.location.latitude !== undefined) {
+      return Promise.resolve({
+        latitude: state.location.latitude,
+        longitude: state.location.longitude,
+      });
+    }
+    if (state.location.address) {
+      var q = encodeURIComponent(state.location.address);
+      return fetch(
+        "https://nominatim.openstreetmap.org/search?q=" + q + "&format=json&limit=1",
+        { headers: { "Accept": "application/json" } }
+      )
+        .then(function (r) { return r.json(); })
+        .then(function (results) {
+          if (!results || results.length === 0) {
+            throw new Error("ADDRESS_NOT_FOUND");
+          }
+          return {
+            latitude: +parseFloat(results[0].lat).toFixed(4),
+            longitude: +parseFloat(results[0].lon).toFixed(4),
+          };
+        });
+    }
+    return Promise.reject(new Error("NO_LOCATION"));
+  }
+
   function fetchRecommendation() {
     if (!state.location || !state.cropId) return;
     if (state.loading) return;
@@ -183,20 +261,23 @@
     els.submitButton.classList.add("loading");
     showLoading();
 
-    var body = {
-      location: state.location,
-      crop: { id: state.cropId },
-    };
-
-    var fetchOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    };
-
     var endpoint = window.CROP_API_ENDPOINT || "/v1/recommendations";
 
-    fetch(endpoint, fetchOptions)
+    resolveLocation()
+      .then(function (coords) {
+        var body = {
+          location: {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+          },
+          crop_id: state.cropId,
+        };
+        return fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+      })
       .then(function (response) {
         return response.json().then(function (data) {
           return { ok: response.ok, status: response.status, data: data };
@@ -238,7 +319,7 @@
 
     // Header
     html += '<div class="results-header">';
-    html += '<h3>Historical evidence: ' + escapeHtml(data.crop.name || state.cropLabel || data.crop.id) + "</h3>";
+    html += '<h3>Historical evidence: ' + escapeHtml(data.crop.name || state.cropName || data.crop.id) + "</h3>";
     if (data.location && data.location.matched_area) {
       html += '<p class="matched-area">Matched area: ' + escapeHtml(data.location.matched_area.label) + "</p>";
     }
@@ -388,6 +469,19 @@
 
   function renderNetworkError(err) {
     els.resultsSection.hidden = false;
+
+    if (err && err.message === "ADDRESS_NOT_FOUND") {
+      els.resultsSection.innerHTML =
+        '<div class="state-card error-state">' +
+        '<div class="state-icon" aria-hidden="true">📍</div>' +
+        "<h3>Location not found</h3>" +
+        "<p>Could not find that place. Try a more specific address, for example a town and country.</p>" +
+        '<button class="ghost-button retry-button" type="button" onclick="location.reload()">Try again</button>' +
+        "</div>";
+      els.resultsSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      return;
+    }
+
     var offline = !navigator.onLine;
     var html = '<div class="state-card error-state">';
     html += '<div class="state-icon" aria-hidden="true">' + (offline ? "📴" : "⚠") + "</div>";
@@ -461,8 +555,12 @@
   function init() {
     initDateGreeting();
 
-    els.categories.forEach(function (cat) {
-      cat.addEventListener("click", function () { selectCategory(cat); });
+    // Load crop catalog
+    loadCrops();
+
+    // Crop search filter
+    els.cropSearch.addEventListener("input", function () {
+      renderCropList(els.cropSearch.value);
     });
 
     els.useGeolocationBtn.addEventListener("click", requestGeolocation);

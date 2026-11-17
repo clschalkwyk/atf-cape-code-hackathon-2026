@@ -1,10 +1,11 @@
-const CACHE_NAME = "tyala-africa-v1";
+const CACHE_NAME = "tyala-africa-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./config.js",
+  "./crops.json",
   "./manifest.webmanifest",
   "./assets/farmer-home.svg",
 ];
