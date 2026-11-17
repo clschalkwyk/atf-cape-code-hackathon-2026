@@ -93,7 +93,7 @@ tests/                  — request/response validation tests
 
 - **Installable**: manifest with standalone display, icons, theme color
   `#385819`.
-- **Offline**: service worker (`tyala-shell-v8`) caches the app shell and
+- **Offline**: service worker (`tyala-shell-v9`) caches the app shell and
   `crops.json`; navigation is network-first with cache fallback.
 - **Responsive**: works from 320px to desktop widths.
 - **Accessible**: semantic HTML, ARIA live regions, keyboard focus styles,

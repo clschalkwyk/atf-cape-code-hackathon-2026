@@ -14,9 +14,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./styles.css?v=9">
     <script src="./config.js"></script>
-    <script type="module" src="./app.mjs"></script>
+    <script type="module" src="./app.mjs?v=9"></script>
   </head>
   <body>
     <header class="topbar">
@@ -45,24 +45,24 @@
               maxlength="300" placeholder="e.g. district or nearest town" aria-describedby="location-help location-error">
             <p id="location-help" class="field-help">Addresses are resolved to coordinates with OpenStreetMap Nominatim; only coordinates are sent to the evidence service and nothing is saved in this app.</p>
             <button id="use-location" class="location-button" type="button">
-              <span aria-hidden="true">◎</span> Use my current location
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/></svg> Use my current location
             </button>
             <p id="location-error" class="inline-error" role="alert" hidden></p>
           </fieldset>
 
           <button class="submit-button" type="submit">
-            <span>List crops for this location</span><span aria-hidden="true">↗</span>
+            <span>List crops for this location</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
           </button>
-          <p class="privacy-note"><span aria-hidden="true">⌑</span> Your precise location is used only for this request.</p>
+          <p class="privacy-note">Your precise location is used only for this request.</p>
         </form>
 
         <aside class="season-card" aria-label="A note about suggestions">
-          <div class="sun-mark" aria-hidden="true">✳</div>
+          <div class="sun-mark" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4.6"/><path d="M12 2.2v2.6M12 19.2v2.6M2.2 12h2.6M19.2 12h2.6M4.9 4.9l1.9 1.9M17.2 17.2l1.9 1.9M19.1 4.9l-1.9 1.9M6.8 17.2l-1.9 1.9"/></svg></div>
           <p class="card-eyebrow">A THOUGHTFUL START</p>
           <h2>Every farm is different.</h2>
           <p>This list reflects historical records, not what must grow on your farm. Local knowledge matters too.</p>
           <div class="card-rule"></div>
-          <p class="card-foot"><span aria-hidden="true">✦</span> Evidence-aware, never a guarantee.</p>
+          <p class="card-foot"><span aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 5.3 4.7 9 10 10-5.3 1-9 4.7-10 10-1-5.3-4.7-9-10-10 5.3-1 9-4.7 10-10Z"/></svg></span> Evidence-aware, never a guarantee.</p>
         </aside>
       </section>
 

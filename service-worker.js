@@ -1,10 +1,10 @@
-const CACHE_NAME = "tyala-shell-v8";
+const CACHE_NAME = "tyala-shell-v9";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css",
-  "./app.mjs",
-  "./recommendations.mjs",
+  "./styles.css?v=9",
+  "./app.mjs?v=9",
+  "./recommendations.mjs?v=9",
   "./crops.json",
   "./manifest.webmanifest",
   "./assets/icon.svg",

@@ -3,7 +3,7 @@ import {
   fetchCropOptions,
   RecommendationError,
   resolvedAreaLabel
-} from "./recommendations.mjs";
+} from "./recommendations.mjs?v=9";
 
 const form = document.querySelector("#recommendation-form");
 const addressInput = document.querySelector("#address");
