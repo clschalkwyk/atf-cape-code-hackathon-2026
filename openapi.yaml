@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Crop Recommendation API
   version: 1.0.0
-  summary: Evidence-aware crop recommendations for the PWA.
+  summary: Historical crop evidence for the PWA; no suitability claims.
   description: |
     Versioned JSON contract for the MVP. Recommendations are decision support,
     not agronomic guarantees. A response must distinguish source-backed
@@ -17,53 +17,35 @@ servers:
     description: Configure the deployment's HTTPS API origin.
 tags:
   - name: Recommendations
-    description: Evidence-aware planting recommendations.
+    description: Historical crop evidence; current data is insufficient for recommendations.
+  - name: Locations
+    description: Exact coordinate-to-administrative-area resolution.
 paths:
-  /v1/recommendations:
+  /v1/locations/resolve:
     post:
-      tags: [Recommendations]
-      operationId: createRecommendation
-      summary: Get ranked crop candidates for a location and planting period.
+      tags: [Locations]
+      operationId: resolveLocation
+      summary: Resolve coordinates to one exact HarvestStat area.
       description: |
-        Accepts either an address or coordinates. Address geocoding and all
-        provider access happen server-side; provider credentials must never be
-        sent by the PWA. Location requests are sensitive and are not cacheable.
-        Only locations in configured African MVP coverage with sufficient
-        current evidence can receive recommendations.
+        Resolves a WGS 84 point against the pinned HarvestStat Africa v1.2
+        administrative polygons and returns an FNID only when that exact
+        feature has historical crop records in the v1.2 coverage index.
+        No address geocoding, nearest-area, parent-area fallback, or agronomic
+        suitability inference is performed. Points on boundaries and overlaps
+        are ambiguous. Coordinates must not be logged or persisted.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RecommendationRequest'
-            examples:
-              coordinates:
-                summary: Coordinates and a date range
-                value:
-                  location:
-                    latitude: -1.2864
-                    longitude: 36.8172
-                  planting_period:
-                    start_date: '2027-03-01'
-                    end_date: '2027-04-15'
-                  weather:
-                    observed_period:
-                      start_date: '2026-10-01'
-                      end_date: '2026-10-31'
-                    rainfall_total_mm: 74
-                    minimum_temperature_c: 16
-                    maximum_temperature_c: 27
-              address:
-                summary: Address and named season
-                value:
-                  location:
-                    address: 'Example district, Example country'
-                  planting_period:
-                    season: 'long rains'
-                    year: 2027
+              $ref: '#/components/schemas/LocationResolutionRequest'
+            example:
+              location:
+                latitude: -1.2864
+                longitude: 36.8172
       responses:
         '200':
-          description: One or more candidates meet the evidence threshold.
+          description: The coordinate falls in one exact supported administrative area.
           headers:
             Cache-Control:
               $ref: '#/components/headers/NoStore'
@@ -72,41 +54,109 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RecommendationResponse'
+                $ref: '#/components/schemas/LocationResolutionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          description: Coordinates are invalid, unsupported, or spatially ambiguous.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
               examples:
-                success:
-                  summary: Evidence-aware ranked candidates
+                validation:
+                  summary: Coordinate range validation failed
                   value:
-                    request_id: req_01JEXAMPLE8Z5Q
-                    recommendations:
-                      - rank: 1
-                        crop:
-                          id: crop-example-a
-                          name: Example crop A
-                        planting_window:
-                          start_date: '2027-03-10'
-                          end_date: '2027-03-31'
-                          basis: provisional
-                        explanations:
-                          - kind: evidence
-                            text: The available seasonal rainfall data is broadly consistent with this candidate.
-                          - kind: user_input
-                            text: The supplied October rainfall was included as context; it does not establish future rainfall.
-                        risks:
-                          - Rainfall estimates are seasonal and may not reflect conditions on the farm.
-                        confidence:
-                          level: low
-                          rationale: Local soil and farm-level observations are unavailable.
-                    data:
-                      as_of: '2026-11-01T00:00:00Z'
-                      sources:
-                        - name: Example seasonal climate dataset
-                          type: climate
-                          observed_at: '2026-10-31T00:00:00Z'
-                          retrieved_at: '2026-11-01T00:00:00Z'
-                    uncertainty:
-                      summary: This is a provisional, data-limited comparison, not a guarantee of yield or suitability.
-                      not_a_guarantee: true
+                    error:
+                      code: validation_error
+                      message: The request contains invalid or conflicting fields.
+                      details:
+                        - field: location.latitude
+                          issue: Must be between -90 and 90 degrees.
+                      request_id: req_01JEXAMPLECOORDVALID
+                      retryable: false
+                unsupportedLocation:
+                  summary: No exact historically indexed area contains this point
+                  value:
+                    error:
+                      code: unsupported_location
+                      message: No exact supported administrative area contains this location.
+                      details: []
+                      request_id: req_01JEXAMPLECOORDUNSUPPORTED
+                      retryable: false
+                ambiguousLocation:
+                  summary: Point lies on or overlaps administrative boundaries
+                  value:
+                    error:
+                      code: ambiguous_location
+                      message: This location falls on an ambiguous administrative boundary.
+                      details: []
+                      request_id: req_01JEXAMPLECOORDAMBIGUOUS
+                      retryable: false
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /healthz:
+    get:
+      operationId: healthCheck
+      summary: Check service health.
+      responses:
+        '200':
+          description: The API is ready to receive requests.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [status, request_id]
+                properties:
+                  status:
+                    type: string
+                    const: ok
+                  request_id:
+                    type: string
+  /v1/recommendations:
+    post:
+      tags: [Recommendations]
+      operationId: createRecommendation
+      summary: Check historical crop evidence for a location.
+      description: |
+        Accepts WGS 84 coordinates and one exact catalog crop ID. This is a
+        historical-evidence-only MVP; it does not assess agronomic suitability.
+        The current service returns insufficient_evidence rather than a
+        recommendation because the catalog has no validated comparable-area
+        denominator or evidence thresholds. HarvestStat calendar fields
+        distinguish reported seasons; they are not phenological timing.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecommendationRequest'
+            examples:
+              cropAtLocation:
+                summary: A catalog crop and coordinates
+                value:
+                  location:
+                    latitude: -1.2864
+                    longitude: 36.8172
+                  crop_id: hsa-v1-2-maize-637a42a5
+      responses:
         '400':
           $ref: '#/components/responses/BadRequest'
         '415':
@@ -130,8 +180,8 @@ paths:
                       code: validation_error
                       message: The request contains invalid or conflicting fields.
                       details:
-                        - field: planting_period.end_date
-                          issue: Must be on or after start_date.
+                        - field: crop_id
+                          issue: Provide a catalog crop ID.
                       request_id: req_01JEXAMPLEVALIDATION
                       retryable: false
                 unsupportedLocation:
@@ -148,10 +198,14 @@ paths:
                   value:
                     error:
                       code: insufficient_evidence
-                      message: Available data is not sufficient to make a responsible recommendation for this planting period.
+                      message: Historical records do not support a defensible prevalence estimate or planting recommendation.
                       details:
-                        - field: data
-                          issue: Required local or seasonal evidence is missing or too stale.
+                        - field: data.prevalence
+                          issue: The catalog has no validated comparable-area denominator.
+                        - field: data.evidence_band
+                          issue: Evidence thresholds have not been validated.
+                        - field: data.planting_window
+                          issue: HarvestStat calendar fields distinguish reported seasons; they are not phenological timing.
                       request_id: req_01JEXAMPLEEVIDENCE
                       retryable: false
         '429':
@@ -169,10 +223,7 @@ paths:
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 location: { latitude: -1.2864, longitude: 36.8172 },
-                planting_period: {
-                  start_date: "2027-03-01",
-                  end_date: "2027-04-15"
-                }
+                crop_id: "hsa-v1-2-maize-637a42a5"
               })
             });
             const result = await response.json();
@@ -293,29 +344,21 @@ components:
     RecommendationRequest:
       type: object
       additionalProperties: false
-      required: [location, planting_period]
+      required: [location, crop_id]
       properties:
         location:
-          oneOf:
-            - $ref: '#/components/schemas/AddressLocation'
-            - $ref: '#/components/schemas/CoordinateLocation'
-          description: Provide exactly one address or coordinate pair.
-        planting_period:
-          oneOf:
-            - $ref: '#/components/schemas/DateRangePeriod'
-            - $ref: '#/components/schemas/NamedSeasonPeriod'
-        weather:
-          $ref: '#/components/schemas/UserWeather'
-    AddressLocation:
+          $ref: '#/components/schemas/CoordinateLocation'
+        crop_id:
+          type: string
+          minLength: 1
+          description: Exact crop ID from the versioned data catalog.
+    LocationResolutionRequest:
       type: object
       additionalProperties: false
-      required: [address]
+      required: [location]
       properties:
-        address:
-          type: string
-          minLength: 3
-          maxLength: 300
-          description: A place or address to geocode server-side. Do not include personal names.
+        location:
+          $ref: '#/components/schemas/CoordinateLocation'
     CoordinateLocation:
       type: object
       additionalProperties: false
@@ -331,67 +374,46 @@ components:
           minimum: -180
           maximum: 180
           description: Decimal degrees, WGS 84.
-    DateRangePeriod:
+    LocationResolutionResponse:
       type: object
       additionalProperties: false
-      required: [start_date, end_date]
+      required: [request_id, resolved_location]
       properties:
-        start_date:
+        request_id:
           type: string
-          format: date
-          description: Earliest intended planting date, local calendar date at the location.
-        end_date:
-          type: string
-          format: date
-          description: Latest intended planting date, local calendar date at the location.
-    NamedSeasonPeriod:
-      type: object
-      additionalProperties: false
-      required: [season]
-      properties:
-        season:
-          type: string
-          minLength: 1
-          maxLength: 80
-          description: User's local season name; interpretation depends on location and available evidence.
-        year:
-          type: integer
-          minimum: 2000
-          maximum: 2100
-          description: Optional Gregorian year associated with the season.
-    UserWeather:
-      type: object
-      additionalProperties: false
-      required: [observed_period]
-      minProperties: 2
-      description: Optional user-supplied observations. They are inputs, not independently verified measurements.
-      properties:
-        observed_period:
-          $ref: '#/components/schemas/ObservedPeriod'
-        rainfall_total_mm:
-          type: number
-          minimum: 0
-          description: Total rainfall during observed_period, in millimetres (mm).
-        minimum_temperature_c:
-          type: number
-          description: Minimum observed air temperature during observed_period, in degrees Celsius.
-        maximum_temperature_c:
-          type: number
-          description: Maximum observed air temperature during observed_period, in degrees Celsius.
-      dependentRequired:
-        minimum_temperature_c: [maximum_temperature_c]
-        maximum_temperature_c: [minimum_temperature_c]
-    ObservedPeriod:
-      type: object
-      additionalProperties: false
-      required: [start_date, end_date]
-      properties:
-        start_date:
-          type: string
-          format: date
-        end_date:
-          type: string
-          format: date
+          description: Opaque identifier matching X-Request-Id; it does not encode coordinates.
+        resolved_location:
+          type: object
+          additionalProperties: false
+          required: [fnid, country_code, country, admin_level, admin_1, admin_2, boundary_source]
+          properties:
+            fnid:
+              type: string
+              description: HarvestStat administrative feature identifier.
+            country_code:
+              type: string
+              pattern: '^[A-Z]{2}$'
+              description: ISO 3166-1 alpha-2 code.
+            country:
+              type: string
+            admin_level:
+              type: integer
+              enum: [1, 2]
+            admin_1:
+              type: string
+            admin_2:
+              type: [string, 'null']
+            boundary_source:
+              type: object
+              additionalProperties: false
+              required: [id, version]
+              properties:
+                id:
+                  type: string
+                  const: harveststat-boundaries-v1-2
+                version:
+                  type: string
+                  const: v1.2
     RecommendationResponse:
       type: object
       additionalProperties: false
@@ -531,6 +553,7 @@ components:
                 - unsupported_media_type
                 - validation_error
                 - unsupported_location
+                - ambiguous_location
                 - insufficient_evidence
                 - rate_limited
                 - internal_error
