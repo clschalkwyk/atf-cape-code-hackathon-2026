@@ -1,0 +1,754 @@
+/* ──────────────────────────────────────────────────────────────────────
+   Tyala Africa — PWA styles
+   Color tokens are CSS custom properties so they can be overridden
+   in one place (see :root below). The initial palette is derived from
+   the Cappy brand can per user request; adjust the hex values here
+   once the final brand colors are confirmed.
+   ────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Brand palette (from Cappy can — adjust if final values differ) */
+  --brand-primary: #f26522;      /* Cappy orange */
+  --brand-primary-dark: #c44a14;
+  --brand-secondary: #ffd200;    /* Cappy yellow */
+  --brand-accent: #e2231a;       /* Cappy red */
+  --brand-light: #fff4ec;        /* warm peach tint */
+  --brand-surface: #f8f5f2;      /* warm off-white */
+
+  /* Neutrals */
+  --ink: #171717;
+  --ink-soft: #555;
+  --ink-muted: #626262;
+  --line: #dedede;
+  --surface: #fff;
+  --surface-alt: #f2f2f2;
+
+  /* Semantic */
+  --color-low: #b8541a;
+  --color-moderate: #c69214;
+  --color-high: #2d8a3e;
+  --color-error: #c0392b;
+
+  /* Radii */
+  --r-screen: 28px;
+  --r-card: 20px;
+  --r-pill: 999px;
+  --r-small: 14px;
+
+  /* Spacing */
+  --gap: 10px;
+
+  /* Transition */
+  --t-fast: 140ms ease;
+
+  color-scheme: light;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: var(--surface);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  padding: clamp(16px, 4vw, 36px);
+  display: grid;
+  place-items: start center;
+  background: var(--brand-surface);
+}
+
+button {
+  font: inherit;
+}
+
+/* ── Screen shell ─────────────────────────────────────────────────────── */
+
+.screen {
+  width: min(100%, 720px);
+  padding: clamp(18px, 4vw, 30px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-screen);
+  background: var(--surface);
+}
+
+.screen-header {
+  min-height: 30px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.screen-label {
+  margin: 0;
+  color: var(--brand-primary);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.menu-button {
+  width: 34px;
+  height: 34px;
+  padding: 5px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background-color var(--t-fast);
+}
+
+.menu-button:hover {
+  background: var(--surface-alt);
+}
+
+.menu-button svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+/* ── Weather / context card ────────────────────────────────────────────── */
+
+.weather-card {
+  padding: clamp(18px, 4vw, 26px);
+  border-radius: var(--r-card);
+  background: var(--brand-light);
+  border: 1px solid var(--line);
+}
+
+.date,
+.weather-note,
+.season {
+  color: var(--ink-muted);
+}
+
+.date {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+.weather-card h1 {
+  margin: 0;
+  font-size: clamp(25px, 4.7vw, 34px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.location {
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(17px, 3.2vw, 21px);
+}
+
+.location svg {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--brand-primary);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+#location-label {
+  color: var(--ink-soft);
+}
+
+.weather-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.temperature {
+  margin: 0;
+  font-size: clamp(28px, 5vw, 36px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  color: var(--brand-primary);
+}
+
+.season {
+  margin: 0;
+  font-size: clamp(16px, 3.1vw, 20px);
+  white-space: nowrap;
+}
+
+.weather-note {
+  margin: 16px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* ── Crop section ──────────────────────────────────────────────────────── */
+
+.crop-section {
+  padding-top: clamp(22px, 4vw, 30px);
+}
+
+.crop-section h2 {
+  margin: 0;
+  font-size: clamp(24px, 4.7vw, 32px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.intro {
+  max-width: 580px;
+  margin: 14px 0 18px;
+  color: var(--ink-muted);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* ── Location input ─────────────────────────────────────────────────────── */
+
+.location-input {
+  margin-bottom: 18px;
+  padding: 16px;
+  border: 1px dashed var(--brand-primary);
+  border-radius: var(--r-card);
+  background: var(--brand-light);
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.text-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-small);
+  font: inherit;
+  font-size: 16px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.text-input:focus {
+  outline: 3px solid var(--brand-primary);
+  outline-offset: 1px;
+  border-color: var(--brand-primary);
+}
+
+.location-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.ghost-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--brand-primary);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--brand-primary);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color var(--t-fast);
+}
+
+.ghost-button:hover {
+  background: var(--brand-light);
+}
+
+.ghost-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+/* ── Category grid ──────────────────────────────────────────────────────── */
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+.category {
+  min-height: 62px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: clamp(15px, 2.8vw, 19px);
+  cursor: pointer;
+  transition: background-color var(--t-fast), border-color var(--t-fast);
+}
+
+.category svg {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.category:hover {
+  border-color: var(--brand-primary);
+}
+
+.category[aria-pressed="true"] {
+  border-color: var(--brand-primary);
+  background: var(--brand-light);
+  color: var(--brand-primary-dark);
+}
+
+/* ── Submit button ──────────────────────────────────────────────────────── */
+
+.submit-button {
+  width: 100%;
+  min-height: 62px;
+  margin-top: 16px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--brand-primary);
+  color: var(--surface);
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--t-fast), opacity var(--t-fast);
+}
+
+.submit-button:hover:not(:disabled) {
+  background: var(--brand-primary-dark);
+}
+
+.submit-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.submit-button.loading {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.submit-button svg {
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+/* ── Interaction message ─────────────────────────────────────────────────── */
+
+.interaction-message {
+  min-height: 0;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.interaction-message:not(:empty) {
+  margin-top: 12px;
+}
+
+/* ── Results section ─────────────────────────────────────────────────────── */
+
+.results-section {
+  margin-top: 24px;
+}
+
+.results-card {
+  padding: clamp(18px, 4vw, 26px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--surface);
+}
+
+.results-header {
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.results-header h3 {
+  margin: 0 0 4px;
+  font-size: clamp(19px, 3.6vw, 24px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.matched-area {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 14px;
+}
+
+.indicator {
+  margin-bottom: 20px;
+}
+
+.indicator h4 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.indicator-value {
+  margin: 0 0 4px;
+  font-size: clamp(18px, 3.4vw, 22px);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.indicator-value.unavailable {
+  color: var(--ink-muted);
+  font-style: italic;
+  font-size: 17px;
+}
+
+.indicator-detail {
+  margin: 2px 0;
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+
+.indicator-note {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+
+.cross-year {
+  font-size: 0.7em;
+  color: var(--ink-muted);
+}
+
+/* ── Confidence band ─────────────────────────────────────────────────────── */
+
+.confidence-band {
+  margin-bottom: 20px;
+  padding: 14px;
+  border-radius: var(--r-small);
+  background: var(--surface-alt);
+}
+
+.confidence-label {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--surface);
+  text-transform: capitalize;
+}
+
+.confidence-low {
+  background: var(--color-low);
+}
+
+.confidence-moderate {
+  background: var(--color-moderate);
+}
+
+.confidence-high {
+  background: var(--color-high);
+}
+
+.confidence-rationale {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+/* ── Caveats ─────────────────────────────────────────────────────────────── */
+
+.caveats {
+  margin-bottom: 20px;
+}
+
+.caveats h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.caveats ul {
+  margin: 0;
+  padding-left: 18px;
+  list-style: disc;
+}
+
+.caveats li {
+  margin-bottom: 6px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+/* ── Data sources ─────────────────────────────────────────────────────────── */
+
+.sources {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.sources h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sources ul {
+  margin: 0;
+  padding-left: 18px;
+  list-style: disc;
+}
+
+.sources li {
+  margin-bottom: 6px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.source-period {
+  color: var(--ink-muted);
+}
+
+.source-type {
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+/* ── State cards (loading / error) ─────────────────────────────────────────── */
+
+.state-card {
+  padding: clamp(18px, 4vw, 26px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  text-align: center;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.loading-state p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 16px;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--surface-alt);
+  border-top-color: var(--brand-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-state {
+  border-color: var(--color-error);
+}
+
+.error-state .state-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.error-state h3 {
+  margin: 8px 0 6px;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.error-state p {
+  margin: 0 0 6px;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.state-hint {
+  color: var(--ink-muted) !important;
+  font-size: 14px !important;
+}
+
+.request-id {
+  font-size: 12px !important;
+  color: var(--ink-muted) !important;
+  font-family: monospace;
+  margin-top: 10px !important;
+}
+
+.retry-button {
+  margin-top: 14px;
+}
+
+/* ── About dialog ─────────────────────────────────────────────────────────── */
+
+.about-dialog {
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 0;
+  max-width: min(90vw, 460px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.about-dialog article {
+  padding: clamp(20px, 4vw, 30px);
+}
+
+.about-dialog h2 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--brand-primary);
+}
+
+.about-dialog p {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.about-dialog p:last-child {
+  margin-bottom: 0;
+  text-align: right;
+}
+
+/* ── Focus visibility ─────────────────────────────────────────────────────── */
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--brand-primary);
+  outline-offset: 3px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+
+@media (min-width: 700px) {
+  .screen-label {
+    font-size: 17px;
+  }
+
+  .weather-card {
+    padding: 28px 32px;
+  }
+
+  .weather-note,
+  .intro {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 380px) {
+  body {
+    padding: 12px;
+  }
+
+  .screen {
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .weather-card {
+    padding: 17px;
+  }
+
+  .category {
+    gap: 8px;
+    padding-inline: 8px;
+    font-size: 14px;
+  }
+
+  .category svg {
+    width: 25px;
+    height: 25px;
+    flex-basis: 25px;
+  }
+
+  .location-actions {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

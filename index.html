@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="Tyala Africa — historical crop planting evidence for your location, from public agricultural records.">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/farmer-home.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="./assets/farmer-home.svg">
+    <link rel="stylesheet" href="./styles.css">
+    <title>Tyala Africa</title>
+  </head>
+  <body>
+    <main class="screen" aria-labelledby="screen-title">
+      <header class="screen-header">
+        <p id="screen-title" class="screen-label">TYALA AFRICA</p>
+        <button class="menu-button" type="button" aria-label="About" title="About">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"></path>
+          </svg>
+        </button>
+      </header>
+
+      <section class="weather-card" aria-labelledby="greeting">
+        <p class="date" id="date"></p>
+        <h1 id="greeting">Hello, Farmer</h1>
+        <p class="location" id="location-display">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+            <circle cx="12" cy="10" r="2.5"></circle>
+          </svg>
+          <span id="location-label">Set your location to begin</span>
+        </p>
+        <div class="weather-summary">
+          <p class="temperature" id="season-text">—</p>
+          <p class="season" id="hemisphere-text"></p>
+        </div>
+        <p class="weather-note">Historical evidence only — no live weather or farm-level data is assessed.</p>
+      </section>
+
+      <section class="crop-section" aria-labelledby="crop-heading">
+        <h2 id="crop-heading">What should I plant?</h2>
+        <p class="intro">We'll use your location to find historical planting evidence for crops grown in your area.</p>
+
+        <div class="location-input" id="location-input-section" hidden>
+          <label for="address-input" class="input-label">Enter your location</label>
+          <input type="text" id="address-input" class="text-input" placeholder="e.g. Pretoria, South Africa" autocomplete="off" spellcheck="false">
+          <div class="location-actions">
+            <button class="ghost-button" type="button" id="use-geolocation-btn">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8Z"></path>
+                <circle cx="12" cy="10" r="2.5"></circle>
+              </svg>
+              <span>Use my GPS</span>
+            </button>
+            <button class="ghost-button" type="button" id="set-address-btn">Set address</button>
+          </div>
+        </div>
+
+        <div class="category-grid" aria-label="Choose a crop">
+          <button class="category" type="button" aria-pressed="false" data-crop-id="maize" data-crop-label="Maize">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M7 25 25 7M10 22l-3-3m7-1-4-4m8-1-4-4m8 16-3-3m-2 0-4-4m9-4-3-3M5 27c4-1 7-3 10-6s5-6 7-10c1-2 4-4 6-4-1 4-2 7-4 10-3 5-8 10-19 10Z"></path>
+            </svg>
+            <span>Maize</span>
+          </button>
+          <button class="category" type="button" aria-pressed="false" data-crop-id="vegetables" data-crop-label="Vegetables">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M16 27V14m0 4c-6 0-9-3-9-8 6 0 9 3 9 8Zm0-3c0-6 3-9 9-9 0 6-3 9-9 9Zm-6 12h12"></path>
+            </svg>
+            <span>Vegetables</span>
+          </button>
+          <button class="category" type="button" aria-pressed="false" data-crop-id="legumes" data-crop-label="Legumes">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M26 6C15 6 7 11 7 20c0 4 3 6 6 5 8-2 13-10 13-19ZM6 27c4-6 8-10 15-14"></path>
+            </svg>
+            <span>Legumes</span>
+          </button>
+          <button class="category" type="button" aria-pressed="false" data-crop-id="fruit-and-trees" data-crop-label="Fruit &amp; trees">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M8 26v-5a4 4 0 0 1-1-8 6 6 0 0 1 12 0 4 4 0 0 1-1 8v5m-5-7v7m10 0V13l-3 2 3-6 3 6-3-2v13m-4 0h8"></path>
+            </svg>
+            <span>Fruit &amp; trees</span>
+          </button>
+        </div>
+
+        <button class="submit-button" type="button" id="submit-button" disabled>
+          <span>Find historical evidence</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12h14m-6-6 6 6-6 6"></path>
+          </svg>
+        </button>
+        <p class="interaction-message" role="status" aria-live="polite" id="interaction-message"></p>
+      </section>
+
+      <section class="results-section" id="results-section" hidden aria-live="polite" aria-atomic="true"></section>
+
+      <dialog class="about-dialog" id="about-dialog">
+        <article>
+          <h2>About Tyala Africa</h2>
+          <p>Tyala Africa summarises <strong>historical</strong> crop evidence from public agricultural records for your area. It does <strong>not</strong> provide live weather, farm-level recommendations, yield predictions, or future forecasts.</p>
+          <p>Planting windows come from historical planting calendars. Prevalence is a share of reported cropped area. Both describe what was recorded in the past, not what is best or suitable for your farm.</p>
+          <p><button type="button" id="close-dialog" class="ghost-button">Close</button></p>
+        </article>
+      </dialog>
+    </main>
+    <script src="./config.js" defer></script>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
