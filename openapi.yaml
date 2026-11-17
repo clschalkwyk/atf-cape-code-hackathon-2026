@@ -1,13 +1,12 @@
 openapi: 3.1.0
 info:
-  title: Crop Recommendation API
+  title: Historical Crop Evidence API
   version: 1.0.0
-  summary: Evidence-aware crop recommendations for the PWA.
+  summary: Historical crop evidence for the PWA.
   description: |
-    Versioned JSON contract for the MVP. Recommendations are decision support,
-    not agronomic guarantees. A response must distinguish source-backed
-    evidence from uncertainty and must not recommend crops where evidence is
-    insufficient. See docs/api-contract.md for MVP coverage and operational
+    Versioned contract for a historical-evidence MVP. Results summarize local
+    records; they do not assess live weather, predict phenology, or establish
+    which crop is best. See docs/api-contract.md for evidence and coverage
     assumptions.
   contact:
     name: API maintainers
@@ -16,20 +15,23 @@ servers:
   - url: /
     description: Configure the deployment's HTTPS API origin.
 tags:
-  - name: Recommendations
-    description: Evidence-aware planting recommendations.
+  - name: Historical evidence
+    description: Local historical planting-calendar and crop-area summaries.
 paths:
   /v1/recommendations:
     post:
-      tags: [Recommendations]
-      operationId: createRecommendation
-      summary: Get ranked crop candidates for a location and planting period.
+      tags: [Historical evidence]
+      operationId: getHistoricalCropAssessment
+      summary: Summarize historical planting evidence for one crop and location.
       description: |
-        Accepts either an address or coordinates. Address geocoding and all
-        provider access happen server-side; provider credentials must never be
-        sent by the PWA. Location requests are sensitive and are not cacheable.
-        Only locations in configured African MVP coverage with sufficient
-        current evidence can receive recommendations.
+        Accepts either an address or coordinates and one crop catalog ID.
+        Planting months are reported only when supported by a local historical
+        planting-calendar source. Historical prevalence is a share of reported
+        cropped area only when comparable area records exist. Neither metric
+        measures live weather suitability, predicts crop phenology, or proves
+        the crop is best. Address geocoding and provider access happen
+        server-side; provider credentials must never be sent by the PWA.
+        Location requests are sensitive and are not cacheable.
       requestBody:
         required: true
         content:
@@ -38,32 +40,23 @@ paths:
               $ref: '#/components/schemas/RecommendationRequest'
             examples:
               coordinates:
-                summary: Coordinates and a date range
+                summary: Coordinates and crop catalog ID
                 value:
                   location:
                     latitude: -1.2864
                     longitude: 36.8172
-                  planting_period:
-                    start_date: '2027-03-01'
-                    end_date: '2027-04-15'
-                  weather:
-                    observed_period:
-                      start_date: '2026-10-01'
-                      end_date: '2026-10-31'
-                    rainfall_total_mm: 74
-                    minimum_temperature_c: 16
-                    maximum_temperature_c: 27
+                  crop:
+                    id: crop-example-a
               address:
-                summary: Address and named season
+                summary: Address and crop catalog ID
                 value:
                   location:
                     address: 'Example district, Example country'
-                  planting_period:
-                    season: 'long rains'
-                    year: 2027
+                  crop:
+                    id: crop-example-a
       responses:
         '200':
-          description: One or more candidates meet the evidence threshold.
+          description: At least one requested-crop historical indicator is available.
           headers:
             Cache-Control:
               $ref: '#/components/headers/NoStore'
@@ -72,47 +65,107 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RecommendationResponse'
+                $ref: '#/components/schemas/HistoricalAssessmentResponse'
               examples:
-                success:
-                  summary: Evidence-aware ranked candidates
+                completeEvidence:
+                  summary: Illustrative schema example only; not a HarvestStat lookup
                   value:
                     request_id: req_01JEXAMPLE8Z5Q
-                    recommendations:
-                      - rank: 1
-                        crop:
-                          id: crop-example-a
-                          name: Example crop A
-                        planting_window:
-                          start_date: '2027-03-10'
-                          end_date: '2027-03-31'
-                          basis: provisional
-                        explanations:
-                          - kind: evidence
-                            text: The available seasonal rainfall data is broadly consistent with this candidate.
-                          - kind: user_input
-                            text: The supplied October rainfall was included as context; it does not establish future rainfall.
-                        risks:
-                          - Rainfall estimates are seasonal and may not reflect conditions on the farm.
-                        confidence:
-                          level: low
-                          rationale: Local soil and farm-level observations are unavailable.
+                    location:
+                      matched_area:
+                        spatial_unit: administrative_area
+                        label: Example district, Example country
+                    crop:
+                      id: crop-example-a
+                      name: Example crop A
+                    likely_planting_window:
+                      status: available
+                      start_month: 3
+                      end_month: 5
+                      crosses_year_boundary: false
+                      evidence_basis: historical_planting_calendar
+                    local_historical_prevalence:
+                      status: available
+                      share: 0.32
+                      numerator:
+                        value: 320
+                        unit: hectare
+                      denominator:
+                        value: 1000
+                        unit: hectare
+                      observation_period:
+                        start_year: 2018
+                        end_year: 2023
+                      evidence_basis: reported_cropped_area
+                    confidence_band:
+                      level: low
+                      rationale: The planting window comes from a historical calendar; the area records are limited and do not describe farm-level conditions.
+                    caveats:
+                      - All values in this example are illustrative schema values, not source data.
+                      - Historical area share describes reported cultivation, not agronomic suitability or future demand.
+                      - No live weather or farm-level soil data is assessed.
                     data:
-                      as_of: '2026-11-01T00:00:00Z'
                       sources:
-                        - name: Example seasonal climate dataset
-                          type: climate
-                          observed_at: '2026-10-31T00:00:00Z'
+                        - name: Example local planting calendar
+                          type: planting_calendar
+                          observation_period:
+                            start_year: 2018
+                            end_year: 2023
                           retrieved_at: '2026-11-01T00:00:00Z'
-                    uncertainty:
-                      summary: This is a provisional, data-limited comparison, not a guarantee of yield or suitability.
-                      not_a_guarantee: true
+                        - name: Example agricultural statistics dataset
+                          type: agricultural_statistics
+                          observation_period:
+                            start_year: 2018
+                            end_year: 2023
+                          retrieved_at: '2026-11-01T00:00:00Z'
+                partialEvidence:
+                  summary: Illustrative schema example only; not a HarvestStat lookup
+                  value:
+                    request_id: req_01JEXAMPLEPARTIAL
+                    location:
+                      matched_area:
+                        spatial_unit: administrative_area
+                        label: Example district, Example country
+                    crop:
+                      id: crop-example-a
+                      name: Example crop A
+                    likely_planting_window:
+                      status: unavailable
+                      reason: no_local_planting_calendar
+                    local_historical_prevalence:
+                      status: available
+                      share: 0.32
+                      numerator:
+                        value: 320
+                        unit: hectare
+                      denominator:
+                        value: 1000
+                        unit: hectare
+                      observation_period:
+                        start_year: 2018
+                        end_year: 2023
+                      evidence_basis: reported_cropped_area
+                    confidence_band:
+                      level: low
+                      rationale: Only historical area records are available; no local planting calendar supports a planting window.
+                    caveats:
+                      - All values in this example are illustrative schema values, not source data.
+                      - The planting window is unavailable; annual area records do not reveal planting dates.
+                      - Historical area share is not proof of suitability or a live recommendation.
+                    data:
+                      sources:
+                        - name: Example agricultural statistics dataset
+                          type: agricultural_statistics
+                          observation_period:
+                            start_year: 2018
+                            end_year: 2023
+                          retrieved_at: '2026-11-01T00:00:00Z'
         '400':
           $ref: '#/components/responses/BadRequest'
         '415':
           $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: The request is valid JSON but cannot produce a recommendation.
+          description: The request is valid JSON but cannot produce a historical assessment.
           headers:
             Cache-Control:
               $ref: '#/components/headers/NoStore'
@@ -130,8 +183,8 @@ paths:
                       code: validation_error
                       message: The request contains invalid or conflicting fields.
                       details:
-                        - field: planting_period.end_date
-                          issue: Must be on or after start_date.
+                        - field: crop.id
+                          issue: Must identify a crop in the configured catalog.
                       request_id: req_01JEXAMPLEVALIDATION
                       retryable: false
                 unsupportedLocation:
@@ -139,19 +192,30 @@ paths:
                   value:
                     error:
                       code: unsupported_location
-                      message: This location is outside the currently supported recommendation area.
+                      message: This location is outside the currently supported historical evidence areas.
                       details: []
                       request_id: req_01JEXAMPLEUNSUPPORTED
                       retryable: false
+                unsupportedCrop:
+                  summary: Crop ID is not in the configured catalog
+                  value:
+                    error:
+                      code: unsupported_crop
+                      message: The requested crop is not in the configured catalog.
+                      details:
+                        - field: crop.id
+                          issue: No matching crop ID is available.
+                      request_id: req_01JEXAMPLECROP
+                      retryable: false
                 insufficientEvidence:
-                  summary: Location is covered but evidence is not sufficient
+                  summary: Neither historical indicator has usable local evidence
                   value:
                     error:
                       code: insufficient_evidence
-                      message: Available data is not sufficient to make a responsible recommendation for this planting period.
+                      message: Available local historical data is not sufficient to report a planting window or prevalence.
                       details:
                         - field: data
-                          issue: Required local or seasonal evidence is missing or too stale.
+                          issue: No qualifying local planting-calendar or comparable crop-area records are available.
                       request_id: req_01JEXAMPLEEVIDENCE
                       retryable: false
         '429':
@@ -169,10 +233,7 @@ paths:
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 location: { latitude: -1.2864, longitude: 36.8172 },
-                planting_period: {
-                  start_date: "2027-03-01",
-                  end_date: "2027-04-15"
-                }
+                crop: { id: "crop-example-a" }
               })
             });
             const result = await response.json();
@@ -265,7 +326,7 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
     Unavailable:
-      description: A required upstream source or service is temporarily unavailable.
+      description: A required historical data source or service is temporarily unavailable.
       headers:
         Cache-Control:
           $ref: '#/components/headers/NoStore'
@@ -285,7 +346,7 @@ components:
               value:
                 error:
                   code: service_unavailable
-                  message: Recommendation data is temporarily unavailable.
+                  message: Historical evidence is temporarily unavailable.
                   details: []
                   request_id: req_01JEXAMPLEUNAVAILABLE
                   retryable: true
@@ -293,19 +354,15 @@ components:
     RecommendationRequest:
       type: object
       additionalProperties: false
-      required: [location, planting_period]
+      required: [location, crop]
       properties:
         location:
           oneOf:
             - $ref: '#/components/schemas/AddressLocation'
             - $ref: '#/components/schemas/CoordinateLocation'
           description: Provide exactly one address or coordinate pair.
-        planting_period:
-          oneOf:
-            - $ref: '#/components/schemas/DateRangePeriod'
-            - $ref: '#/components/schemas/NamedSeasonPeriod'
-        weather:
-          $ref: '#/components/schemas/UserWeather'
+        crop:
+          $ref: '#/components/schemas/CropReference'
     AddressLocation:
       type: object
       additionalProperties: false
@@ -331,93 +388,51 @@ components:
           minimum: -180
           maximum: 180
           description: Decimal degrees, WGS 84.
-    DateRangePeriod:
+    CropReference:
       type: object
       additionalProperties: false
-      required: [start_date, end_date]
+      required: [id]
       properties:
-        start_date:
-          type: string
-          format: date
-          description: Earliest intended planting date, local calendar date at the location.
-        end_date:
-          type: string
-          format: date
-          description: Latest intended planting date, local calendar date at the location.
-    NamedSeasonPeriod:
-      type: object
-      additionalProperties: false
-      required: [season]
-      properties:
-        season:
+        id:
           type: string
           minLength: 1
-          maxLength: 80
-          description: User's local season name; interpretation depends on location and available evidence.
-        year:
-          type: integer
-          minimum: 2000
-          maximum: 2100
-          description: Optional Gregorian year associated with the season.
-    UserWeather:
+          maxLength: 100
+          description: Stable ID of a crop in the configured crop catalog; display names are resolved by the service.
+    HistoricalAssessmentResponse:
       type: object
       additionalProperties: false
-      required: [observed_period]
-      minProperties: 2
-      description: Optional user-supplied observations. They are inputs, not independently verified measurements.
-      properties:
-        observed_period:
-          $ref: '#/components/schemas/ObservedPeriod'
-        rainfall_total_mm:
-          type: number
-          minimum: 0
-          description: Total rainfall during observed_period, in millimetres (mm).
-        minimum_temperature_c:
-          type: number
-          description: Minimum observed air temperature during observed_period, in degrees Celsius.
-        maximum_temperature_c:
-          type: number
-          description: Maximum observed air temperature during observed_period, in degrees Celsius.
-      dependentRequired:
-        minimum_temperature_c: [maximum_temperature_c]
-        maximum_temperature_c: [minimum_temperature_c]
-    ObservedPeriod:
-      type: object
-      additionalProperties: false
-      required: [start_date, end_date]
-      properties:
-        start_date:
-          type: string
-          format: date
-        end_date:
-          type: string
-          format: date
-    RecommendationResponse:
-      type: object
-      additionalProperties: false
-      required: [request_id, recommendations, data, uncertainty]
+      required:
+        - request_id
+        - location
+        - crop
+        - likely_planting_window
+        - local_historical_prevalence
+        - confidence_band
+        - caveats
+        - data
       properties:
         request_id:
           type: string
           description: Opaque identifier matching X-Request-Id.
-        recommendations:
-          type: array
-          minItems: 1
-          description: Candidates ordered by relative suitability; rank is not a probability.
-          items:
-            $ref: '#/components/schemas/Recommendation'
-        data:
-          $ref: '#/components/schemas/DataFreshness'
-        uncertainty:
-          $ref: '#/components/schemas/Uncertainty'
-    Recommendation:
-      type: object
-      additionalProperties: false
-      required: [rank, crop, planting_window, explanations, risks, confidence]
-      properties:
-        rank:
-          type: integer
-          minimum: 1
+        location:
+          type: object
+          additionalProperties: false
+          required: [matched_area]
+          properties:
+            matched_area:
+              type: object
+              additionalProperties: false
+              required: [spatial_unit, label]
+              properties:
+                spatial_unit:
+                  type: string
+                  enum: [administrative_area, grid_cell, other]
+                label:
+                  type: string
+                  description: Human-readable matched evidence area; do not imply finer precision than the source.
+                id:
+                  type: string
+                  description: Optional public area identifier, when available.
         crop:
           type: object
           additionalProperties: false
@@ -427,61 +442,138 @@ components:
               type: string
             name:
               type: string
-        planting_window:
-          type: object
-          additionalProperties: false
-          required: [start_date, end_date, basis]
-          properties:
-            start_date:
-              type: string
-              format: date
-              description: Suggested local calendar date.
-            end_date:
-              type: string
-              format: date
-              description: Suggested local calendar date, on or after start_date.
-            basis:
-              type: string
-              enum: [data_supported, provisional]
-              description: Whether local evidence supports the window or it remains provisional.
-        explanations:
+        likely_planting_window:
+          $ref: '#/components/schemas/PlantingWindow'
+        local_historical_prevalence:
+          $ref: '#/components/schemas/HistoricalPrevalence'
+        confidence_band:
+          $ref: '#/components/schemas/ConfidenceBand'
+        caveats:
           type: array
           minItems: 1
           items:
-            type: object
-            additionalProperties: false
-            required: [kind, text]
-            properties:
-              kind:
-                type: string
-                enum: [evidence, user_input, limitation]
-              text:
-                type: string
-        risks:
-          type: array
-          items:
             type: string
-          description: Known material caveats; an empty list does not imply no risk.
-        confidence:
-          type: object
-          additionalProperties: false
-          required: [level, rationale]
-          properties:
-            level:
-              type: string
-              enum: [low, moderate, high]
-              description: Qualitative evidence strength, not a probability or calibrated score.
-            rationale:
-              type: string
-    DataFreshness:
+          description: Must state material evidence limitations; empty caveats are not permitted.
+        data:
+          $ref: '#/components/schemas/HistoricalData'
+    PlantingWindow:
+      oneOf:
+        - $ref: '#/components/schemas/AvailablePlantingWindow'
+        - $ref: '#/components/schemas/UnavailablePlantingWindow'
+      description: |
+        Recurring local calendar months reported in historical planting-calendar
+        evidence, not a forecast or a future date. HarvestStat-Africa calendar
+        fields distinguish seasons, including those spanning calendar years;
+        they do not represent actual phenological timing. Present them only as
+        recorded historical calendar metadata, with a caveat. Never derive
+        this window from annual production or area totals alone.
+    AvailablePlantingWindow:
       type: object
       additionalProperties: false
-      required: [as_of, sources]
+      required: [status, start_month, end_month, crosses_year_boundary, evidence_basis]
       properties:
-        as_of:
+        status:
           type: string
-          format: date-time
-          description: Latest time at which source data used in this response was current, in UTC.
+          const: available
+        start_month:
+          type: integer
+          minimum: 1
+          maximum: 12
+          description: First local calendar month recorded by the historical source.
+        end_month:
+          type: integer
+          minimum: 1
+          maximum: 12
+          description: Last local calendar month recorded by the historical source, inclusive.
+        crosses_year_boundary:
+          type: boolean
+          description: True when the recurring window continues from one calendar year into the next.
+        evidence_basis:
+          type: string
+          const: historical_planting_calendar
+    UnavailablePlantingWindow:
+      type: object
+      additionalProperties: false
+      required: [status, reason]
+      properties:
+        status:
+          type: string
+          const: unavailable
+        reason:
+          type: string
+          enum: [no_local_planting_calendar, insufficient_calendar_evidence]
+    HistoricalPrevalence:
+      oneOf:
+        - $ref: '#/components/schemas/AvailableHistoricalPrevalence'
+        - $ref: '#/components/schemas/UnavailableHistoricalPrevalence'
+      description: |
+        Share of comparable reported cropped area in the matched location and
+        stated observation period attributed to the requested crop, divided by
+        the total comparable reported cropped area in that same location and
+        period. HarvestStat-Africa can support this only where comparable area
+        records exist. This describes historical reporting, not suitability.
+    AvailableHistoricalPrevalence:
+      type: object
+      additionalProperties: false
+      required: [status, share, numerator, denominator, observation_period, evidence_basis]
+      properties:
+        status:
+          type: string
+          const: available
+        share:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: numerator.value divided by denominator.value, using the same area unit and reporting scope.
+        numerator:
+          $ref: '#/components/schemas/AreaTotal'
+        denominator:
+          $ref: '#/components/schemas/AreaTotal'
+        observation_period:
+          $ref: '#/components/schemas/YearRange'
+        evidence_basis:
+          type: string
+          const: reported_cropped_area
+    AreaTotal:
+      type: object
+      additionalProperties: false
+      required: [value, unit]
+      properties:
+        value:
+          type: number
+          minimum: 0
+          description: Aggregated area total over the stated, consistently defined reporting period.
+        unit:
+          type: string
+          const: hectare
+    UnavailableHistoricalPrevalence:
+      type: object
+      additionalProperties: false
+      required: [status, reason]
+      properties:
+        status:
+          type: string
+          const: unavailable
+        reason:
+          type: string
+          enum: [no_comparable_area_records, insufficient_area_evidence]
+    ConfidenceBand:
+      type: object
+      additionalProperties: false
+      required: [level, rationale]
+      properties:
+        level:
+          type: string
+          enum: [low, moderate, high]
+          description: Qualitative evidence-strength band, not a probability or statistical confidence interval.
+        rationale:
+          type: string
+          description: Explains the influence of evidence amount, age, geographic match, and source comparability.
+    HistoricalData:
+      type: object
+      additionalProperties: false
+      required: [sources]
+      properties:
         sources:
           type: array
           minItems: 1
@@ -495,25 +587,26 @@ components:
                 description: Public source or dataset name; never a credential or secret.
               type:
                 type: string
-                enum: [climate, soil, agronomy, other]
-              observed_at:
-                type: string
-                format: date-time
-                description: Optional observation or source publication time, in UTC.
+                enum: [planting_calendar, agricultural_statistics, other]
+              observation_period:
+                $ref: '#/components/schemas/YearRange'
               retrieved_at:
                 type: string
                 format: date-time
-                description: Time the API retrieved this source, in UTC.
-    Uncertainty:
+                description: Time the API retrieved this historical source, in UTC.
+    YearRange:
       type: object
       additionalProperties: false
-      required: [summary, not_a_guarantee]
+      required: [start_year, end_year]
       properties:
-        summary:
-          type: string
-        not_a_guarantee:
-          type: boolean
-          const: true
+        start_year:
+          type: integer
+          minimum: 1900
+          maximum: 2100
+        end_year:
+          type: integer
+          minimum: 1900
+          maximum: 2100
     ErrorResponse:
       type: object
       additionalProperties: false
@@ -531,6 +624,7 @@ components:
                 - unsupported_media_type
                 - validation_error
                 - unsupported_location
+                - unsupported_crop
                 - insufficient_evidence
                 - rate_limited
                 - internal_error
