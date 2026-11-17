@@ -1,0 +1,126 @@
+{
+  "$schema": "https://specs.frictionlessdata.io/schemas/table-schema.json",
+  "title": "HarvestStat Africa v1.2 coverage index",
+  "description": "One aggregated row per source FNID, crop product label, and season label. This table describes coverage of historical source records; it is not a suitability dataset.",
+  "primaryKey": [
+    "source_id",
+    "fnid",
+    "crop_id",
+    "season_name"
+  ],
+  "fields": [
+    {
+      "name": "source_id",
+      "type": "string",
+      "constraints": {
+        "enum": [
+          "harveststat-africa-v1-2"
+        ]
+      }
+    },
+    {
+      "name": "crop_id",
+      "type": "string"
+    },
+    {
+      "name": "crop_label",
+      "type": "string",
+      "description": "Exact product label from HarvestStat Africa v1.2; not taxonomically normalized."
+    },
+    {
+      "name": "country_code",
+      "type": "string",
+      "constraints": {
+        "pattern": "^[A-Z]{2}$"
+      }
+    },
+    {
+      "name": "country_name",
+      "type": "string"
+    },
+    {
+      "name": "fnid",
+      "type": "string"
+    },
+    {
+      "name": "admin_1",
+      "type": "string"
+    },
+    {
+      "name": "admin_2",
+      "type": "string",
+      "description": "Empty when the source's literal 'none' value indicates no admin-2 name."
+    },
+    {
+      "name": "admin_level",
+      "type": "integer",
+      "constraints": {
+        "enum": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "name": "season_name",
+      "type": "string",
+      "description": "Source-reported season label; empty means the source field was blank."
+    },
+    {
+      "name": "planting_year_min",
+      "type": "integer",
+      "format": "default",
+      "constraints": {
+        "minimum": 1900,
+        "maximum": 2200
+      },
+      "description": "Minimum source planting_year among grouped rows; blank if missing."
+    },
+    {
+      "name": "planting_year_max",
+      "type": "integer",
+      "constraints": {
+        "minimum": 1900,
+        "maximum": 2200
+      }
+    },
+    {
+      "name": "planting_months",
+      "type": "string",
+      "description": "JSON array of distinct source planting_month values; [] if none."
+    },
+    {
+      "name": "harvest_year_min",
+      "type": "integer",
+      "constraints": {
+        "minimum": 1900,
+        "maximum": 2200
+      }
+    },
+    {
+      "name": "harvest_year_max",
+      "type": "integer",
+      "constraints": {
+        "minimum": 1900,
+        "maximum": 2200
+      }
+    },
+    {
+      "name": "harvest_months",
+      "type": "string",
+      "description": "JSON array of distinct source harvest_month values; [] if none."
+    },
+    {
+      "name": "record_count",
+      "type": "integer",
+      "constraints": {
+        "minimum": 1
+      }
+    },
+    {
+      "name": "qc_flag_counts",
+      "type": "string",
+      "description": "JSON object mapping source qc_flag values to grouped row counts."
+    }
+  ]
+}

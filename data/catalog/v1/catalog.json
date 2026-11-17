@@ -1,0 +1,4392 @@
+{
+  "catalog_schema_version": "1.0.0",
+  "catalog_version": "1.0.0",
+  "accessed_on": "2026-11-17",
+  "scope_statement": "Africa is the intended MVP region, not a supported-country allowlist. HarvestStat Africa v1.2 supplies pinned subnational crop-history and boundary artifacts; coordinate matching is limited to exact FNIDs with historical crop records. Crop suitability, agronomic profile values, and recommendation support remain unverified unless separately sourced.",
+  "sources": [
+    {
+      "source_id": "harveststat-africa-v1-2",
+      "name": "HarvestStat Africa – Harmonized Subnational Crop Statistics",
+      "source_type": "historical_crop_statistics",
+      "catalog_status": "coverage_indexed",
+      "dataset_version": "v1.2",
+      "primary_url": "https://github.com/HarvestStat/HarvestStat-Africa/tree/v1.2/public",
+      "source_artifact": {
+        "path": "public/hvstat_africa_data_v1.2.csv",
+        "url": "https://raw.githubusercontent.com/HarvestStat/HarvestStat-Africa/v1.2/public/hvstat_africa_data_v1.2.csv",
+        "git_blob_sha": "731d050395ed96b2d4a75b33f17ee61c7e569440",
+        "size_bytes": 25312039
+      },
+      "accessed_on": "2026-11-17",
+      "license": {
+        "name": "MIT License",
+        "status": "confirmed",
+        "terms_url": "https://github.com/HarvestStat/HarvestStat-Africa/blob/v1.2/LICENSE",
+        "notes": "The upstream v1.2 repository README states the data in the repository is licensed under MIT. This entry refers to that release only; re-check the terms and upstream source-material notices for later releases or any other files."
+      },
+      "spatial_coverage": {
+        "description": "Subnational crop statistics in 33 Sub-Saharan African countries; the coverage index records each source FNID and its reported admin level.",
+        "resolution": "FEWS NET-aligned administrative units, admin level 1 or 2 as recorded per unit.",
+        "countries": [
+          "Angola",
+          "Benin",
+          "Burkina Faso",
+          "Burundi",
+          "Cameroon",
+          "Central African Republic",
+          "Chad",
+          "Congo, The Democratic Republic of the",
+          "Ethiopia",
+          "Ghana",
+          "Guinea",
+          "Kenya",
+          "Lesotho",
+          "Liberia",
+          "Madagascar",
+          "Malawi",
+          "Mali",
+          "Mauritania",
+          "Mozambique",
+          "Niger",
+          "Nigeria",
+          "Rwanda",
+          "Senegal",
+          "Sierra Leone",
+          "Somalia",
+          "South Africa",
+          "South Sudan",
+          "Sudan",
+          "Tanzania, United Republic of",
+          "Togo",
+          "Uganda",
+          "Zambia",
+          "Zimbabwe"
+        ]
+      },
+      "temporal_coverage": {
+        "description": "Year ranges are computed from the pinned v1.2 records' planting_year and harvest_year fields; coverage varies by country, crop, and season. These calendar fields identify reported seasons and are not actual phenological timing.",
+        "start_year": 1960,
+        "end_year": 2026
+      },
+      "freshness": {
+        "source_updated_on": "2026-05-05",
+        "update_cycle": "Dataset v1.2 changelog date; no automatic update is configured. The GitHub v1.2 release is pinned."
+      },
+      "observed_coverage": {
+        "record_count": 217487,
+        "country_count": 33,
+        "crop_product_count": 92,
+        "season_label_count": 34,
+        "admin_level_country_counts": {
+          "1": 18,
+          "2": 15
+        },
+        "planting_year_range": [
+          1960,
+          2025
+        ],
+        "harvest_year_range": [
+          1960,
+          2026
+        ]
+      },
+      "limitations": [
+        "Historical crop production, harvested area, yield, and season labels indicate reported activity, not biological suitability, yield potential, or a recommendation.",
+        "The upstream README explicitly says planting_year, planting_month, harvest_year, and harvest_month distinguish multi-season systems and cross-calendar-year seasons; they do not represent actual phenological timing.",
+        "Country, crop, season, and administrative-unit coverage is uneven. Use the generated coverage index for the pinned release rather than assuming coverage from a country list.",
+        "The coverage index contains counts and date/month ranges, not the underlying production values or source rows.",
+        "The dataset is derived from multiple source documents and products; consult the upstream paper and source-material notes before interpreting or redistributing derived values."
+      ],
+      "references": [
+        {
+          "title": "HarvestStat Africa v1.2 public dataset documentation",
+          "url": "https://github.com/HarvestStat/HarvestStat-Africa/blob/v1.2/public/README.md",
+          "accessed_on": "2026-11-17"
+        },
+        {
+          "title": "HarvestStat Africa v1.2 release changelog",
+          "url": "https://github.com/HarvestStat/HarvestStat-Africa/blob/v1.2/public/CHANGELOG.md",
+          "accessed_on": "2026-11-17"
+        },
+        {
+          "title": "HarvestStat Africa – Harmonized Subnational Crop Statistics",
+          "url": "https://doi.org/10.1038/s41597-025-05001-z",
+          "accessed_on": "2026-11-17"
+        }
+      ]
+    },
+    {
+      "source_id": "soilgrids-2",
+      "name": "SoilGrids 2.0",
+      "source_type": "soil",
+      "catalog_status": "candidate_not_ingested",
+      "dataset_version": "SoilGrids 2.0",
+      "primary_url": "https://docs.isric.org/globaldata/soilgrids/",
+      "accessed_on": "2026-11-17",
+      "license": {
+        "name": "Creative Commons Attribution 4.0 International",
+        "status": "confirmed",
+        "terms_url": "https://creativecommons.org/licenses/by/4.0/",
+        "notes": "The ISRIC documentation states that SoilGrids maps are available under CC BY 4.0; attribution is required."
+      },
+      "spatial_coverage": {
+        "description": "Global soil-property predictions, including Africa.",
+        "resolution": "250 m; six standard depth intervals. Soil-property maps include pH, organic carbon, bulk density, coarse fragments, texture fractions, cation exchange capacity, and total nitrogen."
+      },
+      "temporal_coverage": {
+        "description": "Modelled global soil-property surfaces; the cited documentation does not identify a single observation year or per-pixel observation date.",
+        "start_year": null,
+        "end_year": null
+      },
+      "freshness": {
+        "source_updated_on": null,
+        "update_cycle": "The cited documentation describes a regularly updateable product but does not state a fixed update schedule."
+      },
+      "limitations": [
+        "Predictions include uncertainty; use the documented prediction intervals and do not treat a 250 m cell as a field survey.",
+        "ISRIC reports that the SoilGrids REST API is temporarily paused. Prefer its documented WCS/WebDAV alternatives and verify service availability before integration.",
+        "Global availability does not establish local suitability or guarantee complete quality at every location."
+      ],
+      "references": [
+        {
+          "title": "SoilGrids documentation",
+          "url": "https://docs.isric.org/globaldata/soilgrids/",
+          "accessed_on": "2026-11-17"
+        },
+        {
+          "title": "SoilGrids FAQ and product description",
+          "url": "https://docs.isric.org/globaldata/soilgrids/SoilGrids_faqs.html",
+          "accessed_on": "2026-11-17"
+        }
+      ]
+    },
+    {
+      "source_id": "chirps-v3",
+      "name": "Climate Hazards Center Infrared Precipitation with Stations version 3",
+      "source_type": "climate",
+      "catalog_status": "candidate_not_ingested",
+      "dataset_version": "v3",
+      "primary_url": "https://www.chc.ucsb.edu/data/chirps3",
+      "accessed_on": "2026-11-17",
+      "license": {
+        "name": "Creative Commons Attribution 4.0 International; public domain dedication to the extent possible under law",
+        "status": "confirmed",
+        "terms_url": "https://creativecommons.org/licenses/by/4.0/",
+        "notes": "The CHC v3 page states both the public-domain dedication and CC BY 4.0 licensing; retain attribution and the data citation."
+      },
+      "spatial_coverage": {
+        "description": "Quasi-global land precipitation from 60°N to 60°S, all longitudes; includes Africa.",
+        "resolution": "0.05° grid"
+      },
+      "temporal_coverage": {
+        "description": "1981 to near-present. Pentad and monthly are fundamental products; daily products are derived by disaggregating pentad totals.",
+        "start_year": 1981,
+        "end_year": null
+      },
+      "freshness": {
+        "source_updated_on": null,
+        "update_cycle": "Preliminary products are released 2 days after each pentad; final products are produced monthly, typically in the third week of the following month."
+      },
+      "limitations": [
+        "Daily values are downscaled from pentad totals; dates are consistent labels, not uniform local observation windows across station sources.",
+        "Satellite and station estimates can have biases, including underestimation of extreme precipitation in complex terrain.",
+        "This catalog identifies the source but contains no CHIRPS raster values or computed climate summaries."
+      ],
+      "references": [
+        {
+          "title": "CHIRPS v3 data description, citation, and terms",
+          "url": "https://www.chc.ucsb.edu/data/chirps3",
+          "accessed_on": "2026-11-17"
+        },
+        {
+          "title": "CHIRPS v3 data repository",
+          "url": "https://doi.org/10.15780/G2JQ0P",
+          "accessed_on": "2026-11-17"
+        }
+      ]
+    },
+    {
+      "source_id": "era5-land",
+      "name": "ERA5-Land hourly reanalysis",
+      "source_type": "climate",
+      "catalog_status": "candidate",
+      "dataset_version": null,
+      "primary_url": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land",
+      "accessed_on": "2026-11-17",
+      "license": {
+        "name": "License attached to the selected CDS product",
+        "status": "dataset_specific_review_required",
+        "terms_url": "https://cds.climate.copernicus.eu/disclaimer-privacy",
+        "notes": "CDS terms say each product is used under the license attributed to that product. Verify the selected ERA5-Land product's attached license and registration requirements before redistribution or operational use."
+      },
+      "spatial_coverage": {
+        "description": "Global land reanalysis, including Africa.",
+        "resolution": "0.1° distribution grid; native resolution reported as 9 km"
+      },
+      "temporal_coverage": {
+        "description": "January 1950 to present; hourly data.",
+        "start_year": 1950,
+        "end_year": null
+      },
+      "freshness": {
+        "source_updated_on": null,
+        "update_cycle": "Reanalysis; check the selected CDS product for current availability and update latency."
+      },
+      "limitations": [
+        "Reanalysis is a model-based estimate influenced indirectly by observations, not a direct local station measurement.",
+        "CDS terms disclaim accuracy and availability guarantees; the selected product's license and variable availability require confirmation.",
+        "No ERA5-Land values have been acquired or summarized for this catalog."
+      ],
+      "references": [
+        {
+          "title": "ERA5-Land dataset overview",
+          "url": "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-land?tab=overview",
+          "accessed_on": "2026-11-17"
+        },
+        {
+          "title": "Copernicus Climate Data Store terms of use",
+          "url": "https://cds.climate.copernicus.eu/disclaimer-privacy",
+          "accessed_on": "2026-11-17"
+        }
+      ]
+    },
+    {
+      "source_id": "fao-gaez-v4",
+      "name": "FAO / IIASA Global Agro-Ecological Zones (GAEZ) v4",
+      "source_type": "crop_suitability",
+      "catalog_status": "candidate",
+      "dataset_version": "v4",
+      "primary_url": "https://gaez.fao.org/",
+      "accessed_on": "2026-11-17",
+      "license": {
+        "name": "Not confirmed for a specific downloadable layer",
+        "status": "dataset_specific_review_required",
+        "terms_url": null,
+        "notes": "The portal exposes GAEZ v4 data and crop-related themes, but a layer-specific license was not verifiable from the landing-page metadata. Do not redistribute or ingest a layer until its terms are checked."
+      },
+      "spatial_coverage": {
+        "description": "Global agro-ecological data portal; Africa is within the intended regional study scope.",
+        "resolution": "Not confirmed for a selected layer; verify the dataset metadata before use."
+      },
+      "temporal_coverage": {
+        "description": "Not confirmed for a selected layer; verify scenario, baseline period, and vintage in layer metadata.",
+        "start_year": null,
+        "end_year": null
+      },
+      "freshness": {
+        "source_updated_on": null,
+        "update_cycle": "No update schedule verified for a selected layer."
+      },
+      "limitations": [
+        "Candidate source only: no GAEZ suitability layer, crop-specific threshold, or regional value is included in this catalog.",
+        "Do not treat modeled agro-ecological suitability as a farm-level guarantee; confirm crop, management level, climate scenario, scale, and license for any selected layer."
+      ],
+      "references": [
+        {
+          "title": "GAEZ v4 Data Portal",
+          "url": "https://gaez.fao.org/",
+          "accessed_on": "2026-11-17"
+        }
+      ]
+    },
+    {
+      "source_id": "fao-ecocrop",
+      "name": "FAO ECOCROP",
+      "source_type": "agronomy",
+      "catalog_status": "candidate",
+      "dataset_version": null,
+      "primary_url": "https://gaez.fao.org/pages/ecocrop",
+      "accessed_on": "2026-11-17",
+      "license": {
+        "name": "Not confirmed",
+        "status": "dataset_specific_review_required",
+        "terms_url": null,
+        "notes": "The FAO portal describes ECOCROP but the retrieved page did not state a data license. Verify terms for the selected database content before reuse or redistribution."
+      },
+      "spatial_coverage": {
+        "description": "Species-level plant and environmental descriptors; not a georeferenced suitability layer.",
+        "resolution": "Not spatially gridded; the FAO portal describes a database for more than 2,000 plant species."
+      },
+      "temporal_coverage": {
+        "description": "The FAO page says ECOCROP was developed in the 1990s and is gradually integrated into GAEZ; no data vintage or temporal coverage is stated.",
+        "start_year": null,
+        "end_year": null
+      },
+      "freshness": {
+        "source_updated_on": null,
+        "update_cycle": "The FAO page says the application is updated and gradually integrated into GAEZ but gives no release date or schedule."
+      },
+      "limitations": [
+        "The portal describes environmental descriptors such as minimum/maximum temperature, annual precipitation, soil pH, light, climate zone, photoperiod sensitivity, latitude, and altitude; values for individual crops have not been independently reviewed or copied into this catalog.",
+        "No cultivar-specific, local planting-window, or regional suitability values are included.",
+        "The database page does not provide a verified license or a dated data release."
+      ],
+      "references": [
+        {
+          "title": "FAO ECOCROP description in the GAEZ v4 portal",
+          "url": "https://gaez.fao.org/pages/ecocrop",
+          "accessed_on": "2026-11-17"
+        }
+      ]
+    },
+    {
+      "source_id": "harveststat-boundaries-v1-2",
+      "name": "HarvestStat Africa v1.2 administrative boundaries",
+      "source_type": "boundary",
+      "catalog_status": "coverage_indexed",
+      "dataset_version": "v1.2",
+      "primary_url": "https://github.com/HarvestStat/HarvestStat-Africa/tree/v1.2/public",
+      "source_artifact": {
+        "path": "hvstat_africa_boundary_v1.2.gpkg",
+        "url": "https://raw.githubusercontent.com/HarvestStat/HarvestStat-Africa/v1.2/public/hvstat_africa_boundary_v1.2.gpkg",
+        "git_blob_sha": "d470ba2bed4263a56fe16e8f8be4a3ebdca2c861",
+        "size_bytes": 8486912
+      },
+      "accessed_on": "2026-11-17",
+      "license": {
+        "name": "MIT License",
+        "status": "confirmed",
+        "terms_url": "https://github.com/HarvestStat/HarvestStat-Africa/blob/v1.2/LICENSE",
+        "notes": "The upstream v1.2 repository README states repository data is licensed under MIT. This entry refers to the pinned v1.2 boundary file only; inspect upstream source-material notices before using other versions or assets."
+      },
+      "spatial_coverage": {
+        "description": "Subnational administrative polygons across 33 Sub-Saharan African countries. The boundary file contains 1,128 features; 1,041 FNIDs intersect the pinned historical crop coverage index.",
+        "resolution": "Administrative-area polygons at admin level 1 or 2 as named by the source, not a uniform ground-distance grid. GeoPackage geometry CRS is EPSG:4326 (WGS 84).",
+        "countries": [
+          "Angola",
+          "Benin",
+          "Burkina Faso",
+          "Burundi",
+          "Cameroon",
+          "Central African Republic",
+          "Chad",
+          "Congo, The Democratic Republic of the",
+          "Ethiopia",
+          "Ghana",
+          "Guinea",
+          "Kenya",
+          "Lesotho",
+          "Liberia",
+          "Madagascar",
+          "Malawi",
+          "Mali",
+          "Mauritania",
+          "Mozambique",
+          "Niger",
+          "Nigeria",
+          "Rwanda",
+          "Senegal",
+          "Sierra Leone",
+          "Somalia",
+          "South Africa",
+          "South Sudan",
+          "Sudan",
+          "Tanzania, United Republic of",
+          "Togo",
+          "Uganda",
+          "Zambia",
+          "Zimbabwe"
+        ]
+      },
+      "temporal_coverage": {
+        "description": "Versioned administrative boundary snapshot; not a boundary time series. The GeoPackage metadata records last_change 2026-05-18T13:59:31.163Z.",
+        "start_year": null,
+        "end_year": null
+      },
+      "freshness": {
+        "source_updated_on": "2026-05-18",
+        "update_cycle": "Pinned to the v1.2 GeoPackage. Boundary changes require an explicit source/version review and a rebuilt coverage join."
+      },
+      "limitations": [
+        "Only an exact unique interior polygon match is returned. Points on boundaries, overlapping polygons, points outside polygons, and areas without a matching historical crop index record are not assigned to a nearby or parent area.",
+        "A spatial intersection identifies an administrative area with historical reported crops; it does not establish suitability, current support, or agronomic evidence.",
+        "Boundary polygons represent the source's administrative delineation and may not reflect current or field-level boundaries.",
+        "The original source dataset documentation does not state a uniform map scale or ground-distance resolution."
+      ],
+      "references": [
+        {
+          "title": "HarvestStat Africa v1.2 public dataset documentation",
+          "url": "https://github.com/HarvestStat/HarvestStat-Africa/blob/v1.2/public/README.md",
+          "accessed_on": "2026-11-17"
+        },
+        {
+          "title": "HarvestStat Africa v1.2 release changelog",
+          "url": "https://github.com/HarvestStat/HarvestStat-Africa/blob/v1.2/public/CHANGELOG.md",
+          "accessed_on": "2026-11-17"
+        }
+      ]
+    }
+  ],
+  "crop_profiles": [
+    {
+      "crop_id": "hsa-v1-2-avocado-d22c09bc",
+      "common_name": "Avocado",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-bambara-groundnut-afd4d23b",
+      "common_name": "Bambara groundnut",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-banana-f9782dd7",
+      "common_name": "Banana",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-barley-b904432b",
+      "common_name": "Barley",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-bean-hyacinth-89dd505e",
+      "common_name": "Bean (Hyacinth)",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-beans-red-2ccb2f83",
+      "common_name": "Beans (Red)",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-beans-rosecoco-09c3d60a",
+      "common_name": "Beans (Rosecoco)",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-beans-white-b853a52d",
+      "common_name": "Beans (White)",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-beans-mixed-b45ec27c",
+      "common_name": "Beans (mixed)",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-beet-ce80e5b7",
+      "common_name": "Beet",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-bush-bean-28355c98",
+      "common_name": "Bush Bean",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-cabbage-d37db978",
+      "common_name": "Cabbage",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-canola-seed-5b42c221",
+      "common_name": "Canola Seed",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-capsicum-chinense-09d64d0d",
+      "common_name": "Capsicum Chinense",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-carrots-5bb3e78b",
+      "common_name": "Carrots",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-cashew-unshelled-22d99003",
+      "common_name": "Cashew (unshelled)",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-cassava-b5cc7692",
+      "common_name": "Cassava",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-celery-17d78bdb",
+      "common_name": "Celery",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-cereal-crops-8a049d9a",
+      "common_name": "Cereal Crops",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-chat-460b3a7d",
+      "common_name": "Chat",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-chick-peas-fcde1699",
+      "common_name": "Chick Peas",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-chili-pepper-a084370f",
+      "common_name": "Chili Pepper",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-coffee-b0e1f06c",
+      "common_name": "Coffee",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-coriander-e9f8516a",
+      "common_name": "Coriander",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-cotton-38ba2144",
+      "common_name": "Cotton",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-cotton-acala-823121f9",
+      "common_name": "Cotton (Acala)",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-cotton-american-21d9a868",
+      "common_name": "Cotton (American)",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-cottonseed-ac55124c",
+      "common_name": "Cottonseed",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-cowpea-554a6cb3",
+      "common_name": "Cowpea",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-cucumber-bff0d9f9",
+      "common_name": "Cucumber",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-eggplant-84247c8a",
+      "common_name": "Eggplant",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-ethiopian-cabbage-ec7a299f",
+      "common_name": "Ethiopian Cabbage",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-fava-bean-4d8319f7",
+      "common_name": "Fava Bean",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-fenugreek-ae538f72",
+      "common_name": "Fenugreek",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-field-peas-065667fb",
+      "common_name": "Field Peas",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-fonio-421f2721",
+      "common_name": "Fonio",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-garlic-4e7bcd0c",
+      "common_name": "Garlic",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-geocarpa-groundnut-54468e57",
+      "common_name": "Geocarpa groundnut",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-ginger-544a9cb4",
+      "common_name": "Ginger",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-goussi-6b8581bf",
+      "common_name": "Goussi",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-grass-pea-8f70eadb",
+      "common_name": "Grass Pea",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-green-bean-cb37f304",
+      "common_name": "Green Bean",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-green-pea-92669d43",
+      "common_name": "Green Pea",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-green-peppers-08e68495",
+      "common_name": "Green Peppers",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-groundnuts-in-shell-405c92d3",
+      "common_name": "Groundnuts (In Shell)",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-hops-ee332425",
+      "common_name": "Hops",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-jute-9ea53a1e",
+      "common_name": "Jute",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-kale-39275916",
+      "common_name": "Kale",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-lentils-52b746b6",
+      "common_name": "Lentils",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-lettuce-c0e80db8",
+      "common_name": "Lettuce",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-linseed-50273eb1",
+      "common_name": "Linseed",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-macadamia-7b348598",
+      "common_name": "Macadamia",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-maize-637a42a5",
+      "common_name": "Maize",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-maize-yellow-f5373448",
+      "common_name": "Maize (Yellow)",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-melon-9b1b8c9a",
+      "common_name": "Melon",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-millet-0b39c9dd",
+      "common_name": "Millet",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-molokhia-5632176b",
+      "common_name": "Molokhia",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-mung-bean-0a548f46",
+      "common_name": "Mung bean",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-neug-108ac6da",
+      "common_name": "Neug",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-oats-4e1648f2",
+      "common_name": "Oats",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-okras-276d1536",
+      "common_name": "Okras",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-onions-dd5edb7b",
+      "common_name": "Onions",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-pam-nut-692cf92f",
+      "common_name": "Pam Nut",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-paprika-6923479c",
+      "common_name": "Paprika",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-pea-6f7fc5ee",
+      "common_name": "Pea",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-pepper-d9538cf9",
+      "common_name": "Pepper",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-pigeon-pea-a0d73ee7",
+      "common_name": "Pigeon Pea",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-pineapple-80421e00",
+      "common_name": "Pineapple",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-pole-bean-3f8f8e1a",
+      "common_name": "Pole Bean",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-potato-6d61374d",
+      "common_name": "Potato",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-pyrethrum-06d99e78",
+      "common_name": "Pyrethrum",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-rape-f2161cb1",
+      "common_name": "Rape",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-rice-1b9bc7b7",
+      "common_name": "Rice",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-sesame-seed-90b32119",
+      "common_name": "Sesame Seed",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-sorghum-b93f08e9",
+      "common_name": "Sorghum",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-sorghum-red-db67ddb0",
+      "common_name": "Sorghum (Red)",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-sorrel-e25fa28b",
+      "common_name": "Sorrel",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-soybean-211c88f5",
+      "common_name": "Soybean",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-squash-9f9a8456",
+      "common_name": "Squash",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-squash-and-melon-seeds-12b1341d",
+      "common_name": "Squash and Melon Seeds",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-sugarcane-ad32d6a3",
+      "common_name": "Sugarcane",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-sunflower-seed-75078730",
+      "common_name": "Sunflower Seed",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-sweet-potatoes-18b4376b",
+      "common_name": "Sweet Potatoes",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-taro-3664bbe9",
+      "common_name": "Taro",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-tea-017979e8",
+      "common_name": "Tea",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-teff-4b0fa3b1",
+      "common_name": "Teff",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-tobacco-d00a0fc1",
+      "common_name": "Tobacco",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-tomato-8289a984",
+      "common_name": "Tomato",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-velvet-bean-c7cf0834",
+      "common_name": "Velvet Bean",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-watermelon-4b4e11cc",
+      "common_name": "Watermelon",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-wheat-cca303e9",
+      "common_name": "Wheat",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    },
+    {
+      "crop_id": "hsa-v1-2-yams-2c33c7d4",
+      "common_name": "Yams",
+      "scientific_name": null,
+      "identity_status": "source_label_only",
+      "identity_source_id": "harveststat-africa-v1-2",
+      "growing_duration_days": {
+        "minimum": null,
+        "maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "temperature_requirements_c": {
+        "minimum": null,
+        "maximum": null,
+        "growth_stage": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "rainfall_requirements_mm": {
+        "minimum_total": null,
+        "maximum_total": null,
+        "period_days": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "water_requirement": {
+        "value": null,
+        "unit": null,
+        "basis": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "soil_preferences": {
+        "texture_classes": [],
+        "ph_minimum": null,
+        "ph_maximum": null,
+        "status": "missing",
+        "source_ids": []
+      },
+      "planting_window_status": "missing",
+      "planting_windows": []
+    }
+  ],
+  "regional_coverage": {
+    "path": "harveststat-coverage-v1.2.csv",
+    "schema_path": "harveststat-coverage.schema.json",
+    "source_id": "harveststat-africa-v1-2",
+    "record_count": 20177,
+    "query_keys": [
+      "crop_id",
+      "country_code",
+      "fnid",
+      "season_name"
+    ],
+    "absence_semantics": "No matching index row means no historical record for this exact crop/FNID/season in the pinned source release; it does not mean the crop is absent or unsuitable.",
+    "generated_on": "2026-11-17"
+  }
+}
