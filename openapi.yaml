@@ -1,0 +1,554 @@
+openapi: 3.1.0
+info:
+  title: Crop Recommendation API
+  version: 1.0.0
+  summary: Evidence-aware crop recommendations for the PWA.
+  description: |
+    Versioned JSON contract for the MVP. Recommendations are decision support,
+    not agronomic guarantees. A response must distinguish source-backed
+    evidence from uncertainty and must not recommend crops where evidence is
+    insufficient. See docs/api-contract.md for MVP coverage and operational
+    assumptions.
+  contact:
+    name: API maintainers
+security: []
+servers:
+  - url: /
+    description: Configure the deployment's HTTPS API origin.
+tags:
+  - name: Recommendations
+    description: Evidence-aware planting recommendations.
+paths:
+  /v1/recommendations:
+    post:
+      tags: [Recommendations]
+      operationId: createRecommendation
+      summary: Get ranked crop candidates for a location and planting period.
+      description: |
+        Accepts either an address or coordinates. Address geocoding and all
+        provider access happen server-side; provider credentials must never be
+        sent by the PWA. Location requests are sensitive and are not cacheable.
+        Only locations in configured African MVP coverage with sufficient
+        current evidence can receive recommendations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecommendationRequest'
+            examples:
+              coordinates:
+                summary: Coordinates and a date range
+                value:
+                  location:
+                    latitude: -1.2864
+                    longitude: 36.8172
+                  planting_period:
+                    start_date: '2027-03-01'
+                    end_date: '2027-04-15'
+                  weather:
+                    observed_period:
+                      start_date: '2026-10-01'
+                      end_date: '2026-10-31'
+                    rainfall_total_mm: 74
+                    minimum_temperature_c: 16
+                    maximum_temperature_c: 27
+              address:
+                summary: Address and named season
+                value:
+                  location:
+                    address: 'Example district, Example country'
+                  planting_period:
+                    season: 'long rains'
+                    year: 2027
+      responses:
+        '200':
+          description: One or more candidates meet the evidence threshold.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecommendationResponse'
+              examples:
+                success:
+                  summary: Evidence-aware ranked candidates
+                  value:
+                    request_id: req_01JEXAMPLE8Z5Q
+                    recommendations:
+                      - rank: 1
+                        crop:
+                          id: crop-example-a
+                          name: Example crop A
+                        planting_window:
+                          start_date: '2027-03-10'
+                          end_date: '2027-03-31'
+                          basis: provisional
+                        explanations:
+                          - kind: evidence
+                            text: The available seasonal rainfall data is broadly consistent with this candidate.
+                          - kind: user_input
+                            text: The supplied October rainfall was included as context; it does not establish future rainfall.
+                        risks:
+                          - Rainfall estimates are seasonal and may not reflect conditions on the farm.
+                        confidence:
+                          level: low
+                          rationale: Local soil and farm-level observations are unavailable.
+                    data:
+                      as_of: '2026-11-01T00:00:00Z'
+                      sources:
+                        - name: Example seasonal climate dataset
+                          type: climate
+                          observed_at: '2026-10-31T00:00:00Z'
+                          retrieved_at: '2026-11-01T00:00:00Z'
+                    uncertainty:
+                      summary: This is a provisional, data-limited comparison, not a guarantee of yield or suitability.
+                      not_a_guarantee: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          description: The request is valid JSON but cannot produce a recommendation.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                validation:
+                  summary: Request field validation failed
+                  value:
+                    error:
+                      code: validation_error
+                      message: The request contains invalid or conflicting fields.
+                      details:
+                        - field: planting_period.end_date
+                          issue: Must be on or after start_date.
+                      request_id: req_01JEXAMPLEVALIDATION
+                      retryable: false
+                unsupportedLocation:
+                  summary: Location is outside configured evidence coverage
+                  value:
+                    error:
+                      code: unsupported_location
+                      message: This location is outside the currently supported recommendation area.
+                      details: []
+                      request_id: req_01JEXAMPLEUNSUPPORTED
+                      retryable: false
+                insufficientEvidence:
+                  summary: Location is covered but evidence is not sufficient
+                  value:
+                    error:
+                      code: insufficient_evidence
+                      message: Available data is not sufficient to make a responsible recommendation for this planting period.
+                      details:
+                        - field: data
+                          issue: Required local or seasonal evidence is missing or too stale.
+                      request_id: req_01JEXAMPLEEVIDENCE
+                      retryable: false
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+      x-codeSamples:
+        - lang: JavaScript
+          label: Browser fetch
+          source: |
+            const response = await fetch(`${API_BASE_URL}/v1/recommendations`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                location: { latitude: -1.2864, longitude: 36.8172 },
+                planting_period: {
+                  start_date: "2027-03-01",
+                  end_date: "2027-04-15"
+                }
+              })
+            });
+            const result = await response.json();
+components:
+  headers:
+    NoStore:
+      description: Responses containing a location are never stored by HTTP caches.
+      schema:
+        type: string
+        const: no-store
+    RequestId:
+      description: Opaque identifier for support and server-side diagnostics.
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      description: The request body is malformed JSON.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            malformedJson:
+              value:
+                error:
+                  code: bad_request
+                  message: The body must be valid JSON.
+                  details: []
+                  request_id: req_01JEXAMPLEBAD
+                  retryable: false
+    UnsupportedMediaType:
+      description: The request Content-Type is not application/json.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            unsupportedMediaType:
+              value:
+                error:
+                  code: unsupported_media_type
+                  message: Content-Type must be application/json.
+                  details: []
+                  request_id: req_01JEXAMPLEMEDIA
+                  retryable: false
+    RateLimited:
+      description: The request rate limit was exceeded.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Retry-After:
+          description: Seconds before another request may be attempted.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            rateLimited:
+              value:
+                error:
+                  code: rate_limited
+                  message: Too many requests. Try again later.
+                  details: []
+                  request_id: req_01JEXAMPLERATE
+                  retryable: true
+    ServerError:
+      description: An unexpected server error occurred.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unavailable:
+      description: A required upstream source or service is temporarily unavailable.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Retry-After:
+          description: Optional seconds before a retry is appropriate.
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            upstreamUnavailable:
+              value:
+                error:
+                  code: service_unavailable
+                  message: Recommendation data is temporarily unavailable.
+                  details: []
+                  request_id: req_01JEXAMPLEUNAVAILABLE
+                  retryable: true
+  schemas:
+    RecommendationRequest:
+      type: object
+      additionalProperties: false
+      required: [location, planting_period]
+      properties:
+        location:
+          oneOf:
+            - $ref: '#/components/schemas/AddressLocation'
+            - $ref: '#/components/schemas/CoordinateLocation'
+          description: Provide exactly one address or coordinate pair.
+        planting_period:
+          oneOf:
+            - $ref: '#/components/schemas/DateRangePeriod'
+            - $ref: '#/components/schemas/NamedSeasonPeriod'
+        weather:
+          $ref: '#/components/schemas/UserWeather'
+    AddressLocation:
+      type: object
+      additionalProperties: false
+      required: [address]
+      properties:
+        address:
+          type: string
+          minLength: 3
+          maxLength: 300
+          description: A place or address to geocode server-side. Do not include personal names.
+    CoordinateLocation:
+      type: object
+      additionalProperties: false
+      required: [latitude, longitude]
+      properties:
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+          description: Decimal degrees, WGS 84.
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+          description: Decimal degrees, WGS 84.
+    DateRangePeriod:
+      type: object
+      additionalProperties: false
+      required: [start_date, end_date]
+      properties:
+        start_date:
+          type: string
+          format: date
+          description: Earliest intended planting date, local calendar date at the location.
+        end_date:
+          type: string
+          format: date
+          description: Latest intended planting date, local calendar date at the location.
+    NamedSeasonPeriod:
+      type: object
+      additionalProperties: false
+      required: [season]
+      properties:
+        season:
+          type: string
+          minLength: 1
+          maxLength: 80
+          description: User's local season name; interpretation depends on location and available evidence.
+        year:
+          type: integer
+          minimum: 2000
+          maximum: 2100
+          description: Optional Gregorian year associated with the season.
+    UserWeather:
+      type: object
+      additionalProperties: false
+      required: [observed_period]
+      minProperties: 2
+      description: Optional user-supplied observations. They are inputs, not independently verified measurements.
+      properties:
+        observed_period:
+          $ref: '#/components/schemas/ObservedPeriod'
+        rainfall_total_mm:
+          type: number
+          minimum: 0
+          description: Total rainfall during observed_period, in millimetres (mm).
+        minimum_temperature_c:
+          type: number
+          description: Minimum observed air temperature during observed_period, in degrees Celsius.
+        maximum_temperature_c:
+          type: number
+          description: Maximum observed air temperature during observed_period, in degrees Celsius.
+      dependentRequired:
+        minimum_temperature_c: [maximum_temperature_c]
+        maximum_temperature_c: [minimum_temperature_c]
+    ObservedPeriod:
+      type: object
+      additionalProperties: false
+      required: [start_date, end_date]
+      properties:
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+    RecommendationResponse:
+      type: object
+      additionalProperties: false
+      required: [request_id, recommendations, data, uncertainty]
+      properties:
+        request_id:
+          type: string
+          description: Opaque identifier matching X-Request-Id.
+        recommendations:
+          type: array
+          minItems: 1
+          description: Candidates ordered by relative suitability; rank is not a probability.
+          items:
+            $ref: '#/components/schemas/Recommendation'
+        data:
+          $ref: '#/components/schemas/DataFreshness'
+        uncertainty:
+          $ref: '#/components/schemas/Uncertainty'
+    Recommendation:
+      type: object
+      additionalProperties: false
+      required: [rank, crop, planting_window, explanations, risks, confidence]
+      properties:
+        rank:
+          type: integer
+          minimum: 1
+        crop:
+          type: object
+          additionalProperties: false
+          required: [id, name]
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        planting_window:
+          type: object
+          additionalProperties: false
+          required: [start_date, end_date, basis]
+          properties:
+            start_date:
+              type: string
+              format: date
+              description: Suggested local calendar date.
+            end_date:
+              type: string
+              format: date
+              description: Suggested local calendar date, on or after start_date.
+            basis:
+              type: string
+              enum: [data_supported, provisional]
+              description: Whether local evidence supports the window or it remains provisional.
+        explanations:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            additionalProperties: false
+            required: [kind, text]
+            properties:
+              kind:
+                type: string
+                enum: [evidence, user_input, limitation]
+              text:
+                type: string
+        risks:
+          type: array
+          items:
+            type: string
+          description: Known material caveats; an empty list does not imply no risk.
+        confidence:
+          type: object
+          additionalProperties: false
+          required: [level, rationale]
+          properties:
+            level:
+              type: string
+              enum: [low, moderate, high]
+              description: Qualitative evidence strength, not a probability or calibrated score.
+            rationale:
+              type: string
+    DataFreshness:
+      type: object
+      additionalProperties: false
+      required: [as_of, sources]
+      properties:
+        as_of:
+          type: string
+          format: date-time
+          description: Latest time at which source data used in this response was current, in UTC.
+        sources:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            additionalProperties: false
+            required: [name, type, retrieved_at]
+            properties:
+              name:
+                type: string
+                description: Public source or dataset name; never a credential or secret.
+              type:
+                type: string
+                enum: [climate, soil, agronomy, other]
+              observed_at:
+                type: string
+                format: date-time
+                description: Optional observation or source publication time, in UTC.
+              retrieved_at:
+                type: string
+                format: date-time
+                description: Time the API retrieved this source, in UTC.
+    Uncertainty:
+      type: object
+      additionalProperties: false
+      required: [summary, not_a_guarantee]
+      properties:
+        summary:
+          type: string
+        not_a_guarantee:
+          type: boolean
+          const: true
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message, details, request_id, retryable]
+          properties:
+            code:
+              type: string
+              enum:
+                - bad_request
+                - unsupported_media_type
+                - validation_error
+                - unsupported_location
+                - insufficient_evidence
+                - rate_limited
+                - internal_error
+                - service_unavailable
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: [field, issue]
+                properties:
+                  field:
+                    type: string
+                  issue:
+                    type: string
+            request_id:
+              type: string
+            retryable:
+              type: boolean
