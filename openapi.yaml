@@ -136,12 +136,17 @@ paths:
       operationId: createRecommendation
       summary: Check historical crop evidence for a location.
       description: |
-        Accepts WGS 84 coordinates and one exact catalog crop ID. This is a
-        historical-evidence-only MVP; it does not assess agronomic suitability.
-        The current service returns insufficient_evidence rather than a
-        recommendation because the catalog has no validated comparable-area
-        denominator or evidence thresholds. HarvestStat calendar fields
-        distinguish reported seasons; they are not phenological timing.
+        Accepts WGS 84 coordinates and, optionally, one exact catalog crop ID.
+        This is a historical-evidence-only MVP; it does not assess agronomic
+        suitability. When `crop_id` is omitted, the response lists the crops
+        with historical records in the pinned HarvestStat Africa v1.2 coverage
+        index for the exact resolved administrative area; it is not a
+        suitability ranking and no prevalence or share is computed. When
+        `crop_id` is provided, the single-crop path is unchanged: the current
+        service returns insufficient_evidence rather than a recommendation
+        because the catalog has no validated comparable-area denominator or
+        evidence thresholds. HarvestStat calendar fields distinguish reported
+        seasons; they are not phenological timing.
       requestBody:
         required: true
         content:
@@ -156,13 +161,69 @@ paths:
                     latitude: -1.2864
                     longitude: 36.8172
                   crop_id: hsa-v1-2-maize-637a42a5
+              cropOptionsAtLocation:
+                summary: Coordinates only; lists historically reported crops
+                value:
+                  location:
+                    latitude: -1.2864
+                    longitude: 36.8172
       responses:
+        '200':
+          description: |
+            Location-only request resolved to one exact indexed area and
+            listed the crops with historical records there. Emitted only when
+            `crop_id` is omitted.
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CropOptionsResponse'
+              example:
+                request_id: req_01JEXAMPLECROPOPTIONS
+                resolved_location:
+                  fnid: KE2013A147
+                  country_code: KE
+                  country: Kenya
+                  admin_level: 1
+                  admin_1: Nairobi
+                  admin_2: null
+                  boundary_source:
+                    id: harveststat-boundaries-v1-2
+                    version: v1.2
+                options:
+                  - crop_id: hsa-v1-2-maize-637a42a5
+                    crop_label: Maize
+                    summary:
+                      record_count: 34
+                      seasons_observed:
+                        - season_name: Annual
+                          planting_months: [1]
+                          harvest_months: [12]
+                        - season_name: Long
+                          planting_months: [3]
+                          harvest_months: [8]
+                        - season_name: Short
+                          planting_months: [10]
+                          harvest_months: [3]
+                    evidence_hint: 34 source records across 3 reported seasons.
+                notes:
+                  - Options are crops with historical records in the pinned HarvestStat Africa v1.2 coverage index for this exact administrative area; this is not a suitability ranking or recommendation.
+                  - Record counts are raw source record counts; no prevalence, share, or ranking is computed.
+                  - HarvestStat season and month fields describe reported seasons; they are not phenological timing.
+                  - Absence from this list means no indexed historical record in the pinned release; it does not mean the crop is absent or unsuitable.
         '400':
           $ref: '#/components/responses/BadRequest'
         '415':
           $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: The request is valid JSON but cannot produce a recommendation.
+          description: |
+            The request is valid JSON but cannot produce a recommendation or
+            crop options. Applies to invalid fields, unsupported geography,
+            and locations or crops without indexed historical records.
           headers:
             Cache-Control:
               $ref: '#/components/headers/NoStore'
@@ -208,6 +269,17 @@ paths:
                           issue: HarvestStat calendar fields distinguish reported seasons; they are not phenological timing.
                       request_id: req_01JEXAMPLEEVIDENCE
                       retryable: false
+                insufficientEvidenceNoOptions:
+                  summary: Covered location has no indexed crop records
+                  value:
+                    error:
+                      code: insufficient_evidence
+                      message: No historical crop records are indexed for this administrative area.
+                      details:
+                        - field: data.crop_options
+                          issue: The exact administrative area has no indexed crop records.
+                      request_id: req_01JEXAMPLENOOPTIONS
+                      retryable: false
         '429':
           $ref: '#/components/responses/RateLimited'
         '500':
@@ -227,6 +299,20 @@ paths:
               })
             });
             const result = await response.json();
+        - lang: JavaScript
+          label: Browser fetch (crop options)
+          source: |
+            const response = await fetch(`${API_BASE_URL}/v1/recommendations`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                location: { latitude: -1.2864, longitude: 36.8172 }
+              })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error.message);
+            // result.options: historically reported crops; pass a crop_id back
+            // for the single-crop historical-evidence check.
 components:
   headers:
     NoStore:
@@ -344,14 +430,22 @@ components:
     RecommendationRequest:
       type: object
       additionalProperties: false
-      required: [location, crop_id]
+      required: [location]
+      description: |
+        Coordinates with an optional catalog crop ID. Omitting `crop_id`
+        requests the crop options list for the exact resolved administrative
+        area; providing `crop_id` requests the single-crop historical-evidence
+        check, whose behavior is unchanged.
       properties:
         location:
           $ref: '#/components/schemas/CoordinateLocation'
         crop_id:
           type: string
           minLength: 1
-          description: Exact crop ID from the versioned data catalog.
+          description: |
+            Exact crop ID from the versioned data catalog. Optional: when
+            omitted, the endpoint returns the crops with indexed historical
+            records at this location instead of the single-crop check.
     LocationResolutionRequest:
       type: object
       additionalProperties: false
@@ -383,37 +477,127 @@ components:
           type: string
           description: Opaque identifier matching X-Request-Id; it does not encode coordinates.
         resolved_location:
+          $ref: '#/components/schemas/ResolvedLocation'
+    ResolvedLocation:
+      type: object
+      additionalProperties: false
+      required: [fnid, country_code, country, admin_level, admin_1, admin_2, boundary_source]
+      properties:
+        fnid:
+          type: string
+          description: HarvestStat administrative feature identifier.
+        country_code:
+          type: string
+          pattern: '^[A-Z]{2}$'
+          description: ISO 3166-1 alpha-2 code.
+        country:
+          type: string
+        admin_level:
+          type: integer
+          enum: [1, 2]
+        admin_1:
+          type: string
+        admin_2:
+          type: [string, 'null']
+        boundary_source:
           type: object
           additionalProperties: false
-          required: [fnid, country_code, country, admin_level, admin_1, admin_2, boundary_source]
+          required: [id, version]
           properties:
-            fnid:
+            id:
               type: string
-              description: HarvestStat administrative feature identifier.
-            country_code:
+              const: harveststat-boundaries-v1-2
+            version:
               type: string
-              pattern: '^[A-Z]{2}$'
-              description: ISO 3166-1 alpha-2 code.
-            country:
-              type: string
-            admin_level:
-              type: integer
-              enum: [1, 2]
-            admin_1:
-              type: string
-            admin_2:
-              type: [string, 'null']
-            boundary_source:
-              type: object
-              additionalProperties: false
-              required: [id, version]
-              properties:
-                id:
-                  type: string
-                  const: harveststat-boundaries-v1-2
-                version:
-                  type: string
-                  const: v1.2
+              const: v1.2
+    CropOptionsResponse:
+      type: object
+      additionalProperties: false
+      required: [request_id, resolved_location, options, notes]
+      description: |
+        Crops with historical records in the pinned HarvestStat Africa v1.2
+        coverage index for the exact resolved administrative area. This is a
+        historical-occurrence inventory, not a suitability ranking; no
+        prevalence, share, or ranking is computed. Emitted only when the
+        request omits `crop_id`.
+      properties:
+        request_id:
+          type: string
+          description: Opaque identifier matching X-Request-Id; it does not encode coordinates.
+        resolved_location:
+          $ref: '#/components/schemas/ResolvedLocation'
+        options:
+          type: array
+          minItems: 1
+          description: |
+            Deterministically ordered by crop label; order carries no
+            suitability ranking.
+          items:
+            $ref: '#/components/schemas/CropOption'
+        notes:
+          type: array
+          description: Explicit caveats about the options semantics.
+          items:
+            type: string
+    CropOption:
+      type: object
+      additionalProperties: false
+      required: [crop_id, crop_label, summary, evidence_hint]
+      properties:
+        crop_id:
+          type: string
+          minLength: 1
+          description: Stable catalog crop ID usable in follow-up requests.
+        crop_label:
+          type: string
+          minLength: 1
+        summary:
+          $ref: '#/components/schemas/CropOptionsSummary'
+        evidence_hint:
+          type: string
+          minLength: 1
+          description: |
+            Qualitative description of the indexed historical occurrences; it
+            is not a prevalence estimate or quality assessment.
+    CropOptionsSummary:
+      type: object
+      additionalProperties: false
+      required: [record_count, seasons_observed]
+      properties:
+        record_count:
+          type: integer
+          minimum: 1
+          description: Raw count of source records for this crop and area in the pinned release.
+        seasons_observed:
+          type: array
+          minItems: 1
+          description: Reported seasons observed; these are reporting seasons, not phenological timing.
+          items:
+            $ref: '#/components/schemas/CropSeasonObservation'
+    CropSeasonObservation:
+      type: object
+      additionalProperties: false
+      required: [season_name, planting_months, harvest_months]
+      properties:
+        season_name:
+          type: string
+          minLength: 1
+        planting_months:
+          type: array
+          minItems: 1
+          description: Months in which records were reported for planting.
+          items:
+            type: integer
+            minimum: 1
+            maximum: 12
+        harvest_months:
+          type: array
+          minItems: 1
+          description: Months in which records were reported for harvest.
+          items:
+            type: integer
+            minimum: 1
+            maximum: 12
     RecommendationResponse:
       type: object
       additionalProperties: false

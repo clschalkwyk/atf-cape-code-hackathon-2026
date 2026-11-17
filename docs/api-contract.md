@@ -26,25 +26,44 @@ suitability, or use a nearest or parent-area fallback. Boundary and overlap
 points return `ambiguous_location`; points outside indexed areas return
 `unsupported_location`. A match proves only historical source coverage.
 
-`POST /v1/recommendations` accepts one catalog `crop_id` and WGS 84
-coordinates. It currently returns HTTP `422` with `insufficient_evidence`:
-the source index has no validated comparable-area denominator or evidence
-thresholds, and HarvestStat season fields are not actual phenological timing.
-No prevalence estimate, planting recommendation, or suitability ranking is
-returned. Unknown crop IDs and crops without local records also return
-`insufficient_evidence`.
+`POST /v1/recommendations` accepts WGS 84 coordinates and an optional catalog
+`crop_id`.
+
+- **Location-first crop options (`crop_id` omitted).** The service resolves
+  the coordinates to one exact HarvestStat v1.2 area (no nearest or
+  parent-area fallback) and returns HTTP `200` with the crops that have
+  historical records in the pinned v1.2 coverage index for that exact area.
+  Each option carries the stable catalog `crop_id` for follow-up requests,
+  the crop label, a summary of historical occurrences (seasons and months
+  observed with raw record counts), and a qualitative evidence hint. Options
+  are ordered by label and carry no ranking; comparable-area shares are not
+  computed because the index has no validated denominator; top-level `notes`
+  restate the explicit caveats, including that HarvestStat calendar fields
+  are reporting seasons, not phenological timing. Absence from this list
+  means no indexed historical record in the pinned release; it does not mean
+  the crop is absent or unsuitable. A resolved area with zero indexed crop
+  records returns HTTP `422` with `insufficient_evidence`.
+- **Single-crop check (`crop_id` provided).** It currently returns HTTP `422`
+  with `insufficient_evidence`: the source index has no validated
+  comparable-area denominator or evidence thresholds, and HarvestStat season
+  fields are not actual phenological timing. No prevalence estimate, planting
+  recommendation, or suitability ranking is returned. Unknown crop IDs and
+  crops without local records also return `insufficient_evidence`.
 
 ## Request and units
 
 Requests use `location.latitude` and `location.longitude`, decimal degrees in
-WGS 84, and exact catalog `crop_id` values. Address input and geocoding are
-deferred. The location-resolution request uses coordinates only.
+WGS 84, and, when provided, exact catalog `crop_id` values. Omitting `crop_id`
+requests the location-first crop options list. Address input and geocoding
+are deferred. The location-resolution request uses coordinates only.
 
 Errors use the common `error` envelope. `422` distinguishes invalid input,
 unsupported geography, ambiguous boundaries, and insufficient evidence.
 Malformed JSON uses `400`; a non-JSON content type uses `415`; transient
-service failure uses `503`. No recommendation success response is emitted by
-this MVP until the evidence gaps above are resolved.
+service failure uses `503`. No single-crop recommendation success response is
+emitted by this MVP until the evidence gaps above are resolved; the
+location-only crop options response is an inventory of historical
+occurrences, not a recommendation.
 
 ## Browser, transport, and privacy assumptions
 
@@ -63,6 +82,32 @@ this MVP until the evidence gaps above are resolved.
 
 Configure the API base URL at build/deployment time; it is a public endpoint,
 not a secret. The browser sends no provider credential:
+
+```js
+// Location-first: list historically reported crops for the resolved area.
+const optionsResponse = await fetch(`${API_BASE_URL}/v1/recommendations`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    location: { latitude: -1.2864, longitude: 36.8172 }
+  })
+});
+
+const optionsResult = await optionsResponse.json();
+if (!optionsResponse.ok) {
+  // Use optionsResult.error.code for a specific, user-safe message.
+  throw new Error(optionsResult.error.message);
+}
+// optionsResult.resolved_location: the exact area (FNID, country, admin level).
+// optionsResult.options: { crop_id, crop_label, summary, evidence_hint } per
+// crop, ordered by label with no ranking. optionsResult.notes carries the
+// explicit caveats; render them, and treat HarvestStat months as reporting
+// seasons, not planting guidance. A crop_id from the list can be sent with
+// coordinates for the single-crop historical-evidence check.
+```
+
+Single-crop historical-evidence check (note: it currently always answers
+`422` with `insufficient_evidence`):
 
 ```js
 const response = await fetch(`${API_BASE_URL}/v1/recommendations`, {
