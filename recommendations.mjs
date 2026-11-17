@@ -21,25 +21,29 @@ const errorMessages = {
   service_unavailable: "Evidence data is temporarily unavailable. Try again later."
 };
 
-// The deployed service accepts one crop per request and coordinates only;
-// addresses are geocoded client-side (OpenStreetMap Nominatim) before this
-// call, so `location` must already carry `latitude`/`longitude`.
+// The deployed service accepts coordinates only; addresses are geocoded
+// client-side (OpenStreetMap Nominatim) before this call. `cropId` is
+// optional: omit it to ask for the option list of crops recorded near the
+// location, or pass a catalog id for a single historical assessment.
 export function buildRequest(location, cropId) {
   if (!location ||
       !Number.isFinite(location.latitude) || !Number.isFinite(location.longitude) ||
       Math.abs(location.latitude) > 90 || Math.abs(location.longitude) > 180) {
     throw new RecommendationError("validation_error", "A valid location is required. Use your device location or enter an address that resolves.");
   }
-  if (typeof cropId !== "string" || cropId.trim().length < 1 || cropId.trim().length > 100) {
-    throw new RecommendationError("validation_error", "Choose a crop from the catalog before requesting evidence.");
-  }
-  return {
+  const request = {
     location: {
       latitude: location.latitude,
       longitude: location.longitude
-    },
-    crop_id: cropId.trim()
+    }
   };
+  if (cropId !== undefined) {
+    if (typeof cropId !== "string" || cropId.trim().length < 1 || cropId.trim().length > 100) {
+      throw new RecommendationError("validation_error", "Choose a crop from the catalog before requesting evidence.");
+    }
+    request.crop_id = cropId.trim();
+  }
+  return request;
 }
 
 const PLANTING_REASONS = new Set([
@@ -109,7 +113,7 @@ export function validateResponse(data) {
   return data;
 }
 
-export async function fetchRecommendations(apiBaseUrl, request, fetchImpl = fetch, timeoutMs = REQUEST_TIMEOUT_MS) {
+export async function postRecommendation(apiBaseUrl, request, fetchImpl = fetch, timeoutMs = REQUEST_TIMEOUT_MS) {
   let baseUrl;
   try {
     baseUrl = new URL(apiBaseUrl);
@@ -160,18 +164,65 @@ export async function fetchRecommendations(apiBaseUrl, request, fetchImpl = fetc
         payload && payload.error && payload.error.request_id
       );
     }
-    return validateResponse(payload);
+    return payload;
   } finally {
     clearTimeout(timeout);
   }
 }
 
+export async function fetchRecommendations(apiBaseUrl, request, fetchImpl = fetch, timeoutMs = REQUEST_TIMEOUT_MS) {
+  return validateResponse(await postRecommendation(apiBaseUrl, request, fetchImpl, timeoutMs));
+}
+
+// Verified shape of the deployed location-only response (options list):
+// resolved_location {admin_1, admin_2, country, ...}, options[] of
+// {crop_id, crop_label, summary:{record_count, seasons_observed:[{
+// season_name, planting_months:[int], harvest_months:[int]}]}, evidence_hint},
+// and top-level notes[] honesty caveats. Identity fields are required; the
+// app renders only evidence details that are actually present.
+export function resolvedAreaLabel(payload) {
+  const resolved = payload && payload.resolved_location;
+  const parts = resolved && typeof resolved === "object"
+    ? [resolved.admin_1, resolved.admin_2, resolved.country]
+        .filter((part) => typeof part === "string" && part.trim().length > 0)
+    : [];
+  if (parts.length > 0) return parts.join(", ");
+  const fallback = payload && payload.location && payload.location.matched_area;
+  return fallback && typeof fallback.label === "string" && fallback.label.trim().length > 0
+    ? fallback.label.trim()
+    : "";
+}
+
+export async function fetchCropOptions(apiBaseUrl, request, fetchImpl = fetch, timeoutMs = REQUEST_TIMEOUT_MS) {
+  const payload = await postRecommendation(apiBaseUrl, request, fetchImpl, timeoutMs);
+  if (!payload || typeof payload !== "object" || typeof payload.request_id !== "string" ||
+      typeof resolvedAreaLabel(payload) !== "string" || resolvedAreaLabel(payload).length === 0 ||
+      !Array.isArray(payload.options)) {
+    throw new RecommendationError("invalid_response", "The service returned an incomplete response. No options are shown.");
+  }
+  for (const option of payload.options) {
+    const label = option && typeof option.crop_label === "string" && option.crop_label.trim().length > 0
+      ? option.crop_label
+      : (option && typeof option.crop_name === "string" ? option.crop_name : undefined);
+    const summary = option && option.summary;
+    if (!option || typeof option.crop_id !== "string" || option.crop_id.length === 0 ||
+        typeof label !== "string" || label.length === 0 ||
+        !summary || typeof summary !== "object" ||
+        !Number.isFinite(summary.record_count) || summary.record_count < 0) {
+      throw new RecommendationError("invalid_response", "The service returned an incomplete response. No options are shown.");
+    }
+  }
+  return payload;
+}
+
 export const plantingReasonText = {
   no_local_planting_calendar: "No local planting calendar is available for this area.",
-  insufficient_calendar_evidence: "The available planting calendar evidence is insufficient."
+  insufficient_calendar_evidence: "The available planting calendar evidence is insufficient.",
+  insufficient_records: "Not enough local records to estimate a planting window."
 };
 
 export const prevalenceReasonText = {
   no_comparable_area_records: "No comparable cropped-area records are available.",
-  insufficient_area_evidence: "The available area evidence is insufficient."
+  insufficient_area_evidence: "The available area evidence is insufficient.",
+  insufficient_records: "Not enough local records to estimate."
 };

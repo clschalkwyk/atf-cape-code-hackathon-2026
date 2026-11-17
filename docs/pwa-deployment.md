@@ -29,7 +29,7 @@ This PWA is deployed at <https://tyala-africa-pwa-production.up.railway.app>
 CORS policy is a wildcard (`Access-Control-Allow-Origin: *`) without
 credentials, which matches the app's anonymous, cookie-free requests.
 
-The service worker (`tyala-shell-v7`) intentionally excludes `config.js`,
+The service worker (`tyala-shell-v8`) intentionally excludes `config.js`,
 caches only the static app shell plus `crops.json`, and never handles
 cross-origin requests or non-GET requests. Recommendation responses are
 requested with `cache: "no-store"` and are not stored by the app. Results are
@@ -38,20 +38,21 @@ transition.
 
 ## Location and crop flow
 
-Crop selection happens first: the farmer picks one crop from the versioned
-catalog snapshot in `crops.json` (HarvestStat v1 crop IDs) matched by a
-suggestion list. Device coordinates are read only after the user presses the
-location button and grants browser permission; an address is resolved
-client-side to coordinates with OpenStreetMap Nominatim and only the
-coordinates are sent to the evidence service.
+The main flow is location-first. The farmer provides one location: device
+coordinates (read only after the location button is pressed and browser
+permission granted) or an address resolved client-side to coordinates with
+OpenStreetMap Nominatim; only the coordinates are sent to the evidence
+service.
 
-The request body is `{ "location": { "latitude", "longitude" },
-"crop_id": "<catalog id>" }`, matching the deployed service. The historical
-response shows one assessment: matched area, likely planting window (or its
-unavailability reason), local historical prevalence (or its unavailability
-reason), a confidence band, caveats, and data sources. All evidence is
-presented as historical — never as an agronomic guarantee or forecast.
+The request body is `{ "location": { "latitude", "longitude" } }` (no
+`crop_id`), and the results are the suggested-crops list: each option shows
+the crop name, and whatever historical evidence the service returned
+(planting window, reported share, record counts, notes) — never a ranking or
+recommendation. An empty list is rendered honestly ("no crop records for this
+area"), with nothing fabricated.
 
-`openapi.yaml` in the repository root documents the deployed services; the
-app's `recommendations.mjs` validates responses against that shape
-(`tests/recommendations.test.mjs`, run with `node --test tests/`).
+`recommendations.mjs` still supports a single-crop request
+(`buildRequest(location, cropId)`, validated single-assessment response) for
+the optional per-crop drill-in. The response schemas are documented in the
+repository-root `openapi.yaml`; request/response validation tests run with
+`node --test tests/*.test.mjs`.

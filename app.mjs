@@ -1,18 +1,12 @@
 import {
   buildRequest,
-  fetchRecommendations,
+  fetchCropOptions,
   RecommendationError,
-  plantingReasonText,
-  prevalenceReasonText
+  resolvedAreaLabel
 } from "./recommendations.mjs";
 
 const form = document.querySelector("#recommendation-form");
 const addressInput = document.querySelector("#address");
-const cropNameInput = document.querySelector("#crop-name");
-const cropDataList = document.querySelector("#crop-options");
-const addCropButton = document.querySelector("#add-crop");
-const cropPreferenceList = document.querySelector("#crop-preference-list");
-const cropPreferenceError = document.querySelector("#crop-preference-error");
 const locationButton = document.querySelector("#use-location");
 const locationError = document.querySelector("#location-error");
 const submitButton = form.querySelector('button[type="submit"]');
@@ -21,19 +15,13 @@ const statusTitle = document.querySelector("#status-title");
 const statusMessage = document.querySelector("#status-message");
 const statusIcon = document.querySelector("#status-icon");
 const results = document.querySelector("#results");
+const resultsHeadingArea = document.querySelector("#results-area");
 const resultsTitle = document.querySelector("#results-title");
 const recommendationList = document.querySelector("#recommendation-list");
 const freshness = document.querySelector("#freshness");
 const uncertainty = document.querySelector("#uncertainty");
 
-const MONTHS = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"];
-
-const formatTimestamp = (iso) => new Date(iso).toISOString().slice(0, 10);
-
 let selectedCoordinates = null;
-let selectedCrop = null; // { id, name } from the catalog
-let catalog = [];
 let requestSequence = 0;
 let hadResults = false;
 
@@ -50,6 +38,8 @@ function showStatus(kind, title, message) {
   statusPanel.dataset.kind = kind;
   statusIcon.textContent = kind === "loading" ? "…" : kind === "success" ? "✓" : "!";
   statusTitle.textContent = title;
+  const box = statusPanel.querySelector("div");
+  box.replaceChildren(statusTitle, statusMessage);
   statusMessage.textContent = message;
   statusPanel.hidden = false;
 }
@@ -62,187 +52,47 @@ function appendText(parent, tag, text, className) {
   return element;
 }
 
-function showCropPreferenceError(message) {
-  cropPreferenceError.textContent = message;
-  cropPreferenceError.hidden = !message;
-}
-
-async function loadCatalog() {
-  try {
-    const response = await fetch("./crops.json", { cache: "no-cache" });
-    if (!response.ok) throw new Error("bad status");
-    catalog = await response.json();
-    const fragment = document.createDocumentFragment();
-    for (const entry of catalog) {
-      const option = document.createElement("option");
-      option.value = entry.name;
-      fragment.append(option);
-    }
-    cropDataList.replaceChildren(fragment);
-    cropNameInput.disabled = false;
-    addCropButton.disabled = false;
-  } catch {
-    cropNameInput.disabled = true;
-    addCropButton.disabled = true;
-    cropNameInput.placeholder = "Crop list unavailable";
-    showCropPreferenceError("The crop catalog could not be loaded. Reconnect and reload the page.");
-  }
-}
-
-function findCatalogEntry(name) {
-  const query = name.toLocaleLowerCase();
-  return catalog.find((entry) => entry.name.toLocaleLowerCase() === query) ||
-    catalog.find((entry) => entry.name.toLocaleLowerCase().startsWith(query)) ||
-    undefined;
-}
-
-function renderSelectedCrop() {
-  cropPreferenceList.replaceChildren();
-  if (!selectedCrop) return;
-  const item = document.createElement("li");
-  appendText(item, "span", selectedCrop.name);
-  const removeButton = appendText(item, "button", "×", "preference-remove");
-  removeButton.type = "button";
-  removeButton.setAttribute("aria-label", `Remove ${selectedCrop.name}`);
-  removeButton.addEventListener("click", () => {
-    selectedCrop = null;
-    renderSelectedCrop();
-    cropNameInput.focus();
-  });
-  cropPreferenceList.append(item);
-}
-
-function addCropPreference() {
-  if (!catalog.length) {
-    showCropPreferenceError("The crop catalog could not be loaded. Reconnect and reload the page.");
-    return;
-  }
-  const entered = cropNameInput.value.trim();
-  if (!entered) {
-    showCropPreferenceError("Enter a crop name to set it.");
-    cropNameInput.focus();
-    return;
-  }
-  const match = findCatalogEntry(entered);
-  if (!match) {
-    showCropPreferenceError("That crop isn't in the local catalog yet — pick one from the suggestions.");
-    cropNameInput.focus();
-    return;
-  }
-  selectedCrop = match;
-  cropNameInput.value = "";
-  showCropPreferenceError("");
-  renderSelectedCrop();
-}
-
-const sourceTypeLabels = {
-  planting_calendar: "planting calendar",
-  agricultural_statistics: "crop statistics",
-  other: "other records"
-};
-
-function renderPlantingWindow(window) {
-  const container = document.createElement("div");
-  container.className = "crop-card";
+function noRecordsCard() {
+  const card = document.createElement("article");
+  card.className = "crop-card";
   const details = document.createElement("div");
   details.className = "crop-details";
-  appendText(details, "h3", "Planting window", "crop-name");
-  if (window.status === "available") {
-    const label = `${MONTHS[window.start_month - 1]} – ${MONTHS[window.end_month - 1]}`;
-    appendText(details, "p", label + (window.crosses_year_boundary ? " (crosses year end)" : ""), "crop-window");
-    appendText(details, "span", "Historical calendar record", "basis-badge");
-    appendText(details, "p", "Recorded planting months, not a forecast for your field.", "indicator-note");
-  } else {
-    appendText(details, "p", "Unavailable", "crop-window unavailable");
-    appendText(details, "p", plantingReasonText[window.reason] || window.reason, "indicator-note");
-  }
-  container.append(details);
-  return container;
+  appendText(details, "p", "No crop records are indexed for this area yet.", "crop-window");
+  appendText(details, "p", "Nothing is being suggested — this simply reflects what the local records cover. Absence from records does not mean a crop is unsuitable.", "card-note");
+  card.append(details);
+  return card;
 }
 
-function renderPrevalence(prev) {
-  const container = document.createElement("div");
-  container.className = "crop-card";
-  const details = document.createElement("div");
-  details.className = "crop-details";
-  appendText(details, "h3", "Local historical prevalence", "crop-name");
-  if (prev.status === "available") {
-    const pct = Math.round(prev.share * 100);
-    appendText(details, "p", `${pct}% of reported cropped area`, "crop-window");
-    if (prev.numerator && prev.denominator) {
-      appendText(details, "p", `${prev.numerator.value.toLocaleString()} / ${prev.denominator.value.toLocaleString()} hectare`, "indicator-note");
+function renderCaveats(notes) {
+  uncertainty.replaceChildren();
+  const lead = document.createElement("p");
+  lead.textContent = "This is a list of crops historically reported in local records — not a recommendation, ranking, or suitability assessment.";
+  uncertainty.append(lead);
+  if (Array.isArray(notes) && notes.length > 0) {
+    const list = document.createElement("ul");
+    list.className = "caveats-list";
+    for (const note of notes) {
+      if (typeof note === "string" && note.trim().length > 0) {
+        const item = document.createElement("li");
+        item.textContent = note.trim();
+        list.append(item);
+      }
     }
-    if (prev.observation_period) {
-      appendText(details, "p", `Observation period: ${prev.observation_period.start_year}–${prev.observation_period.end_year}`, "indicator-note");
-    }
-    appendText(details, "span", "Share of reported cultivation", "basis-badge");
-    appendText(details, "p", "Describes historical reporting, not how suitable the crop is.", "indicator-note");
-  } else {
-    appendText(details, "p", "Unavailable", "crop-window unavailable");
-    appendText(details, "p", prevalenceReasonText[prev.reason] || prev.reason, "indicator-note");
+    if (list.children.length > 0) uncertainty.append(list);
   }
-  container.append(details);
-  return container;
 }
 
-function renderAssessment(data) {
-  const fragment = document.createDocumentFragment();
-
-  const headline = document.createElement("article");
-  headline.className = "crop-card assessment-head";
-  const head = document.createElement("div");
-  head.className = "crop-details";
-  appendText(head, "h3", data.crop.name, "crop-name");
-  appendText(head, "p", `Matched area: ${data.location.matched_area.label}`, "crop-window");
-  const confidence = document.createElement("div");
-  confidence.className = "crop-tags";
-  appendText(confidence, "span", `${data.confidence_band.level} evidence strength`, "confidence-badge");
-  appendText(confidence, "p", data.confidence_band.rationale, "confidence-rationale");
-  head.append(confidence);
-  headline.append(head);
-  fragment.append(headline);
-
-  fragment.append(renderPlantingWindow(data.likely_planting_window));
-  fragment.append(renderPrevalence(data.local_historical_prevalence));
-
-  const caveatsCard = document.createElement("article");
-  caveatsCard.className = "crop-card";
-  const caveats = document.createElement("div");
-  caveats.className = "crop-details";
-  appendText(caveats, "h3", "Caveats", "crop-name");
-  const list = document.createElement("ul");
-  list.className = "caveats-list";
-  for (const caveat of data.caveats) appendText(list, "li", caveat);
-  caveats.append(list);
-  caveatsCard.append(caveats);
-  fragment.append(caveatsCard);
-
-  recommendationList.replaceChildren(fragment);
-
-  freshness.replaceChildren();
-  const label = document.createElement("strong");
-  label.textContent = "Data freshness: ";
-  const sourceDetails = data.data.sources.map((source) =>
-    `${source.name} (${sourceTypeLabels[source.type] || source.type}, retrieved ${formatTimestamp(source.retrieved_at)})`
-  ).join("; ");
-  freshness.append(label, document.createTextNode(
-    `${sourceDetails}. These are historical records, not current conditions or a forecast.`
-  ));
-  uncertainty.textContent = "Evidence is historical: it describes what records reported in the past, not a prediction or a promise of harvest.";
-  resultsTitle.textContent = `Historical evidence: ${data.crop.name}`;
-  results.hidden = false;
-  hadResults = true;
-  results.scrollIntoView({ behavior: "smooth", block: "start" });
-}
+const requestProgress = document.querySelector("#request-progress");
 
 function setBusy(isBusy) {
   submitButton.disabled = isBusy;
   locationButton.disabled = isBusy;
-  cropNameInput.disabled = isBusy || !catalog.length;
-  addCropButton.disabled = isBusy || !catalog.length;
-  cropPreferenceList.querySelectorAll("button").forEach((button) => { button.disabled = isBusy; });
-  submitButton.querySelector("span:first-child").textContent = isBusy ? "Checking local data…" : "Find historical evidence";
+  submitButton.querySelector("span:first-child").textContent = isBusy
+    ? "Checking local records…"
+    : "List crops for this location";
   form.setAttribute("aria-busy", String(isBusy));
+  requestProgress.hidden = !isBusy;
+  if (isBusy) requestProgress.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 async function geocodeAddress(address) {
@@ -259,7 +109,7 @@ async function geocodeAddress(address) {
     throw error;
   }
   if (!response.ok) {
-    throw new RecommendationError("unavailable", "The location lookup service could not resolve your address. Try nearby coordinates or a clearer address.");
+    throw new RecommendationError("unavailable", "The location lookup service could not resolve your address. Try a clearer address.");
   }
   const matches = await response.json();
   if (!Array.isArray(matches) || matches.length === 0) {
@@ -274,17 +124,80 @@ async function geocodeAddress(address) {
   };
 }
 
-addCropButton.addEventListener("click", addCropPreference);
-cropNameInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
-    event.preventDefault();
-    addCropPreference();
+function monthRangeText(months) {
+  const valid = Array.isArray(months) &&
+    months.every((month) => Number.isInteger(month) && month >= 1 && month <= 12);
+  if (!valid || months.length === 0) return null;
+  const short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const names = [...new Set(months)].sort((a, b) => a - b).map((month) => short[month - 1]);
+  return names.length === 1 ? names[0] : `${names[0]} – ${names[names.length - 1]}`;
+}
+
+function seasonLine(season) {
+  if (!season || typeof season.season_name !== "string" ||
+      season.season_name.trim().length === 0) return null;
+  const planting = monthRangeText(season.planting_months);
+  const harvest = monthRangeText(season.harvest_months);
+  if (!planting && !harvest) return null;
+  const parts = [season.season_name.trim()];
+  if (planting) parts.push(`plant ${planting}`);
+  if (harvest) parts.push(`harvest ${harvest}`);
+  return parts.join(" · ");
+}
+
+// Renders only the evidence the service actually returned; the option list
+// is historical coverage, not a ranking or recommendation.
+function optionView(option) {
+  const summary = option.summary;
+  const card = document.createElement("article");
+  card.className = "crop-card";
+  const details = document.createElement("div");
+  details.className = "crop-details";
+  appendText(details, "h3", option.crop_label, "crop-name");
+
+  const count = summary.record_count;
+  if (count > 0) {
+    appendText(details, "p", `${count} source record${count === 1 ? "" : "s"}`, "crop-window");
   }
-});
-cropNameInput.addEventListener("input", () => showCropPreferenceError(""));
+  const seasons = Array.isArray(summary.seasons_observed)
+    ? summary.seasons_observed.map(seasonLine).filter(Boolean)
+    : [];
+  for (const line of seasons) appendText(details, "p", line, "card-note");
+  if (typeof option.evidence_hint === "string" && option.evidence_hint.trim().length > 0 &&
+      seasons.length === 0 && count === 0) {
+    appendText(details, "p", option.evidence_hint.trim(), "card-note");
+  }
+
+  card.append(details);
+  return card;
+}
+
+function renderOptions(data) {
+  const optionList = data.options;
+  const fragment = document.createDocumentFragment();
+
+  if (optionList.length === 0) {
+    fragment.append(noRecordsCard());
+  } else {
+    for (const option of optionList) fragment.append(optionView(option));
+  }
+  recommendationList.replaceChildren(fragment);
+
+  freshness.replaceChildren();
+  const freshnessLabel = document.createElement("strong");
+  freshnessLabel.textContent = "Data freshness: ";
+  freshness.append(freshnessLabel, document.createTextNode(
+    "Crops recorded in the pinned HarvestStat Africa historical coverage for this area. Record counts are historical, not current conditions or a forecast."));
+
+  renderCaveats(data.notes);
+  resultsHeadingArea.textContent = `Historically reported crops: ${resolvedAreaLabel(data)}`;
+  resultsTitle.textContent = "Suggested crops to explore";
+  results.hidden = false;
+  hadResults = true;
+  results.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 locationButton.addEventListener("click", () => {
-  locationError.hidden = true;
   if (!navigator.geolocation) {
     selectedCoordinates = null;
     addressInput.focus();
@@ -323,51 +236,63 @@ addressInput.addEventListener("input", () => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   locationError.hidden = true;
-  if (!selectedCrop) {
-    showStatus("error", "Choose a crop", "Set a crop from the catalog in step 01 before requesting evidence.");
-    showCropPreferenceError("Choose a crop from the catalog first.");
-    cropNameInput.focus();
-    return;
-  }
-  let request;
-  try {
-    let location = selectedCoordinates;
-    if (!location) {
-      setBusy(true);
-      showStatus("loading", "Resolving your address", "Looking up your location with OpenStreetMap Nominatim.");
-      location = await geocodeAddress(addressInput.value.trim());
+  let location = selectedCoordinates;
+  if (!location) {
+    const address = addressInput.value.trim();
+    if (!address) {
+      locationError.textContent = "Enter an address or use your device location first.";
+      locationError.hidden = false;
+      addressInput.focus();
+      return;
     }
-    request = buildRequest(location, selectedCrop.id);
-  } catch (error) {
-    showStatus("error", "Check your details", error.message);
-    setBusy(false);
-    return;
+    setBusy(true);
+    showStatus("loading", "Resolving your address", "Looking up your location with OpenStreetMap Nominatim.");
+    try {
+      location = await geocodeAddress(address);
+    } catch (error) {
+      showStatus("error", "Check your location", error.message);
+      setBusy(false);
+      return;
+    }
   }
   const sequence = ++requestSequence;
   results.hidden = true;
   recommendationList.replaceChildren();
   hadResults = false;
   setBusy(true);
-  showStatus("loading", "Checking available evidence", "This can take a few seconds. No previous assessment is being used.");
+  showStatus("loading", "Checking local records", "Listing crops reported near this location. This can take a few seconds.");
   try {
-    const data = await fetchRecommendations(
+    const data = await fetchCropOptions(
       window.CROP_APP_CONFIG && window.CROP_APP_CONFIG.API_BASE_URL,
-      request
+      buildRequest(location)
     );
     if (sequence !== requestSequence) return;
-    renderAssessment(data);
-    showStatus("success", "Your evidence summary is ready", "Compare the evidence, timing, and caveats before deciding.");
+    renderOptions(data);
+    showStatus("success", "Suggested crops are ready", "These are historically reported crops, not a recommendation of what to plant.");
   } catch (error) {
     if (sequence !== requestSequence) return;
+    if (error.code === "insufficient_evidence") {
+      recommendationList.replaceChildren(noRecordsCard());
+      freshness.replaceChildren();
+      const freshnessLabel = document.createElement("strong");
+      freshnessLabel.textContent = "Data freshness: ";
+      freshness.append(freshnessLabel, document.createTextNode(
+        "The coverage index for this area has no crop records in the pinned historical release."));
+      renderCaveats([]);
+      resultsHeadingArea.textContent = "Historically reported crops: this area";
+      results.hidden = false;
+      statusPanel.hidden = true;
+      hadResults = true;
+      return;
+    }
     const kind = !navigator.onLine ? "offline" : "error";
     const title = kind === "offline" ? "You're offline" :
       error.code === "timeout" ? "The request timed out" :
       error.code === "unavailable" ? "Service unavailable" :
       error.code === "unsupported_location" ? "Location not supported" :
-      error.code === "unsupported_crop" ? "Crop not supported" :
-      error.code === "insufficient_evidence" ? "Not enough local evidence" :
-      error.code === "configuration" ? "App not connected" : "No assessment available";
-    showStatus(kind, title, error.message || "The request failed. No assessment is shown.");
+      error.code === "insufficient_evidence" ? "Not enough local records" :
+      error.code === "configuration" ? "App not connected" : "No crop list available";
+    showStatus(kind, title, error.message || "The request failed. No crop list is shown.");
     if (error.requestId) appendText(statusPanel.querySelector("div"), "p", `Reference: ${error.requestId}`);
   } finally {
     if (sequence === requestSequence) setBusy(false);
@@ -380,12 +305,12 @@ window.addEventListener("offline", () => {
   recommendationList.replaceChildren();
   hadResults = false;
   setBusy(false);
-  showStatus("offline", "You're offline", "The crop evidence service needs a live connection. Any results on this screen have been cleared; reconnect before requesting an assessment.");
+  showStatus("offline", "You're offline", "The crop evidence service needs a live connection. Any results on this screen have been cleared; reconnect before requesting a crop list.");
 });
 
 window.addEventListener("online", () => {
   if (statusPanel.dataset.kind === "offline" || statusPanel.dataset.kind === "stale") {
-    showStatus("success", "Connection restored", "Submit your location again to request a current assessment.");
+    showStatus("success", "Connection restored", "Submit your location again to request a current crop list.");
   }
 });
 
@@ -394,7 +319,7 @@ window.addEventListener("pageshow", () => {
     results.hidden = true;
     recommendationList.replaceChildren();
     hadResults = false;
-    showStatus("stale", "Previous results are no longer shown", "You are offline. Reconnect and request updated evidence before planting.");
+    showStatus("stale", "Previous results are no longer shown", "You are offline. Reconnect and request updated crop lists before planting.");
   }
 });
 
@@ -407,7 +332,5 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 }
 
 if (!navigator.onLine) {
-  showStatus("offline", "You're offline", "You can open the app, but a current assessment needs a live connection.");
+  showStatus("offline", "You're offline", "You can open the app, but a current crop list needs a live connection.");
 }
-
-loadCatalog();
