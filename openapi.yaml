@@ -100,6 +100,8 @@ paths:
                       details: []
                       request_id: req_01JEXAMPLECOORDAMBIGUOUS
                       retryable: false
+        '403':
+          $ref: '#/components/responses/ForbiddenOrigin'
         '429':
           $ref: '#/components/responses/RateLimited'
         '500':
@@ -130,6 +132,8 @@ paths:
                     const: ok
                   request_id:
                     type: string
+        '403':
+          $ref: '#/components/responses/ForbiddenOrigin'
   /v1/recommendations:
     post:
       tags: [Recommendations]
@@ -280,6 +284,8 @@ paths:
                           issue: The exact administrative area has no indexed crop records.
                       request_id: req_01JEXAMPLENOOPTIONS
                       retryable: false
+        '403':
+          $ref: '#/components/responses/ForbiddenOrigin'
         '429':
           $ref: '#/components/responses/RateLimited'
         '500':
@@ -365,6 +371,24 @@ components:
                   details: []
                   request_id: req_01JEXAMPLEMEDIA
                   retryable: false
+    ForbiddenOrigin:
+      description: The Origin header is not on the configured browser-origin allowlist.
+      headers:
+        Cache-Control:
+          $ref: '#/components/headers/NoStore'
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: forbidden_origin
+              message: This browser origin is not allowed.
+              details: []
+              request_id: req_01JEXAMPLEORIGIN
+              retryable: false
     RateLimited:
       description: The request rate limit was exceeded.
       headers:
@@ -735,6 +759,7 @@ components:
               enum:
                 - bad_request
                 - unsupported_media_type
+                - forbidden_origin
                 - validation_error
                 - unsupported_location
                 - ambiguous_location

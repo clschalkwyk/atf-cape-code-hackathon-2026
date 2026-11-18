@@ -35,6 +35,11 @@ CATALOG_PATH = ROOT / "data/catalog/v1/catalog.json"
 COVERAGE_PATH = ROOT / "data/catalog/v1/harveststat-coverage-v1.2.csv"
 COVERAGE_SOURCE_ID = "harveststat-africa-v1-2"
 MAX_REQUEST_BYTES = 16 * 1024
+DEFAULT_CORS_ORIGINS = (
+    "https://tyala-africa-pwa-production.up.railway.app",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+)
 LOGGER = logging.getLogger(__name__)
 
 
@@ -323,7 +328,19 @@ class ApiHandler(BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Request-Id", request_id)
         self.send_header("Vary", "Origin")
-        self.send_header("Access-Control-Allow-Origin", "*")
+        origin = self.headers.get("Origin")
+        if origin in self.server.allowed_origins:
+            self.send_header("Access-Control-Allow-Origin", origin)
+
+    def _allow_origin(self, request_id: str) -> bool:
+        origin = self.headers.get("Origin")
+        if origin is None or origin in self.server.allowed_origins:
+            return True
+        self._send_error(
+            ApiError(403, "forbidden_origin", "This browser origin is not allowed."),
+            request_id,
+        )
+        return False
 
     def _send_json(self, status: int, payload: dict[str, Any], request_id: str) -> None:
         body = json.dumps(payload, separators=(",", ":")).encode("utf-8")
@@ -371,6 +388,8 @@ class ApiHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         request_id = uuid.uuid4().hex
+        if not self._allow_origin(request_id):
+            return
         if self.path != "/healthz":
             self._send_error(
                 ApiError(404, "bad_request", "The requested API route was not found."),
@@ -381,6 +400,8 @@ class ApiHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         request_id = uuid.uuid4().hex
+        if not self._allow_origin(request_id):
+            return
         try:
             payload = self._read_json()
             if self.path == "/v1/locations/resolve":
@@ -404,11 +425,15 @@ class ApiHandler(BaseHTTPRequestHandler):
 
     def do_OPTIONS(self) -> None:
         request_id = uuid.uuid4().hex
+        if not self._allow_origin(request_id):
+            return
         self.send_response(204)
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Request-Id", request_id)
         self.send_header("Vary", "Origin")
-        self.send_header("Access-Control-Allow-Origin", "*")
+        origin = self.headers.get("Origin")
+        if origin in self.server.allowed_origins:
+            self.send_header("Access-Control-Allow-Origin", origin)
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.send_header("Content-Length", "0")
@@ -424,6 +449,11 @@ class ApiHTTPServer(ThreadingHTTPServer):
 
     def __init__(self, address: tuple[str, int], app: CropApi) -> None:
         self.app = app
+        configured = os.environ.get("CORS_ALLOWED_ORIGINS")
+        entries = DEFAULT_CORS_ORIGINS if configured is None else configured.split(",")
+        self.allowed_origins = frozenset(origin.strip() for origin in entries if origin.strip())
+        if not self.allowed_origins:
+            raise ValueError("CORS_ALLOWED_ORIGINS must include at least one browser origin.")
         super().__init__(address, ApiHandler)
 
 

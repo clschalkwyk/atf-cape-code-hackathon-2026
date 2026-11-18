@@ -26,8 +26,11 @@ anonymous `POST /v1/recommendations` requests and does not send cookies.
 
 This PWA is deployed at <https://tyala-africa-pwa-production.up.railway.app>
 (Railway service `tyala-africa-pwa`, Railway static-file hosting). The API's
-CORS policy is a wildcard (`Access-Control-Allow-Origin: *`) without
-credentials, which matches the app's anonymous, cookie-free requests.
+CORS allowlist must include this PWA's exact HTTPS origin. The API defaults to
+allowing `https://tyala-africa-pwa-production.up.railway.app` plus localhost:5173
+for development. If hosting the PWA on another domain, set `CORS_ALLOWED_ORIGINS`
+on the API service to the comma-separated approved browser origins. Requests
+do not include cookies or credentials.
 
 The service worker (`tyala-shell-v10`) intentionally excludes `config.js`,
 caches only the static app shell plus `crops.json`, and never handles

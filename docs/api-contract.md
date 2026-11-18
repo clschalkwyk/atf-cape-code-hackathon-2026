@@ -67,9 +67,14 @@ occurrences, not a recommendation.
 
 ## Browser, transport, and privacy assumptions
 
-- Serve the API over HTTPS only. CORS allows any origin (`*`) for anonymous
-  requests and does not allow credentials. Answer `OPTIONS` preflights for
-  `GET`, `POST`, and the `Content-Type` request header.
+- Serve the API over HTTPS only. CORS is limited to configured browser
+  origins; the deployed Tyala PWA is allowed by default, alongside localhost:5173
+  for development. Override `CORS_ALLOWED_ORIGINS` with a comma-separated list
+  of exact origins (scheme, host and port; no trailing slash). Approved origins
+  receive a reflected `Access-Control-Allow-Origin` header without credentials.
+  Unapproved browser origins receive `403 forbidden_origin`; origin-less
+  server-to-server requests remain supported. This is a browser restriction,
+  not API authentication or an abuse-prevention mechanism.
 - The MVP assumes anonymous requests (no user login or API key in the PWA).
   Rate limiting is not implemented by this service; apply edge-level abuse
   controls before broad public use.

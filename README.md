@@ -111,7 +111,7 @@ Cairo, Egypt (30.0444, 31.2357) and Lilongwe, Malawi (-13.9626, 33.7741) return 
 ## Deployment
 
 - Railway project `crop-advisory` hosts two services: `tyala-africa-pwa` and `crop-advisory-api` — the two demo URLs above.
-- **CORS is open by design** — `Access-Control-Allow-Origin: *`, methods `GET, POST, OPTIONS`, no credentials (verified live via preflight).
+- **CORS is allowlisted** — the Tyala PWA Railway origin and localhost:5173 development origins are permitted by default. Configure `CORS_ALLOWED_ORIGINS` as comma-separated exact browser origins to override; credentials are not allowed. CORS does not authenticate API clients.
 - **Service-level rate limiting is not implemented.** The API contract reserves the `429 rate_limited` response so it can be added without breaking clients; until then the endpoints are open.
 
 ## What this data is — and is not
