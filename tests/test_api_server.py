@@ -13,6 +13,7 @@ from api_server import ApiHTTPServer, CropApi
 
 Nairobi = {"latitude": -1.2864, "longitude": 36.8172}
 MAIZE_ID = "hsa-v1-2-maize-637a42a5"
+PWA_ORIGIN = "https://tyala-africa-pwa-production.up.railway.app"
 
 
 class CropApiHTTPTests(unittest.TestCase):
@@ -45,13 +46,15 @@ class CropApiHTTPTests(unittest.TestCase):
         response.close()
         return result
 
-    def test_health_is_cache_disabled_and_open_to_cross_origin_clients(self):
-        status, headers, body = self.request("GET", "/healthz")
+    def test_health_is_cache_disabled_and_allows_configured_origin(self):
+        status, headers, body = self.request(
+            "GET", "/healthz", headers={"Origin": PWA_ORIGIN}
+        )
         result = json.loads(body)
         self.assertEqual(status, 200)
         self.assertEqual(result["status"], "ok")
         self.assertEqual(headers["Cache-Control"], "no-store")
-        self.assertEqual(headers["Access-Control-Allow-Origin"], "*")
+        self.assertEqual(headers["Access-Control-Allow-Origin"], PWA_ORIGIN)
         self.assertNotIn("Access-Control-Allow-Credentials", headers)
         self.assertEqual(headers["X-Request-Id"], result["request_id"])
 
@@ -88,20 +91,56 @@ class CropApiHTTPTests(unittest.TestCase):
         self.assertIn("prevalence", [item["field"].split(".")[-1] for item in result["details"]])
         self.assertFalse(result["retryable"])
 
-    def test_preflight_allows_any_origin_without_credentials(self):
+    def test_preflight_allows_configured_origin_without_credentials(self):
         status, headers, _ = self.request(
             "OPTIONS",
             "/v1/recommendations",
             headers={
-                "Origin": "https://client.example",
+                "Origin": PWA_ORIGIN,
                 "Access-Control-Request-Method": "POST",
                 "Access-Control-Request-Headers": "content-type",
             },
         )
         self.assertEqual(status, 204)
-        self.assertEqual(headers["Access-Control-Allow-Origin"], "*")
+        self.assertEqual(headers["Access-Control-Allow-Origin"], PWA_ORIGIN)
         self.assertEqual(headers["Access-Control-Allow-Methods"], "GET, POST, OPTIONS")
         self.assertNotIn("Access-Control-Allow-Credentials", headers)
+
+    def test_unapproved_origin_is_rejected_for_preflight_and_post(self):
+        origin = "https://unapproved.example"
+        status, headers, body = self.request(
+            "OPTIONS",
+            "/v1/recommendations",
+            headers={
+                "Origin": origin,
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "content-type",
+            },
+        )
+        self.assertEqual(status, 403)
+        self.assertNotIn("Access-Control-Allow-Origin", headers)
+        self.assertEqual(json.loads(body)["error"]["code"], "forbidden_origin")
+
+        status, headers, body = self.request(
+            "POST",
+            "/v1/recommendations",
+            {"location": Nairobi},
+            {"Content-Type": "application/json", "Origin": origin},
+        )
+        self.assertEqual(status, 403)
+        self.assertNotIn("Access-Control-Allow-Origin", headers)
+        self.assertEqual(json.loads(body)["error"]["code"], "forbidden_origin")
+
+    def test_allowed_origin_is_reflected_on_post(self):
+        status, headers, _ = self.request(
+            "POST",
+            "/v1/recommendations",
+            {"location": Nairobi},
+            {"Content-Type": "application/json", "Origin": PWA_ORIGIN},
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(headers["Access-Control-Allow-Origin"], PWA_ORIGIN)
+        self.assertEqual(headers["Vary"], "Origin")
 
     def test_uncovered_location_is_explicit(self):
         status, _, body = self.request(
@@ -123,7 +162,7 @@ class CropApiHTTPTests(unittest.TestCase):
         result = json.loads(body)
         self.assertEqual(status, 200)
         self.assertEqual(headers["Cache-Control"], "no-store")
-        self.assertEqual(headers["Access-Control-Allow-Origin"], "*")
+        self.assertNotIn("Access-Control-Allow-Origin", headers)
         self.assertEqual(result["resolved_location"]["fnid"], "KE2013A147")
         crop_ids = {
             profile["crop_id"]
