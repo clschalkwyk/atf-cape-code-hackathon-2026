@@ -4,7 +4,7 @@ import {
   formatReportedMonths,
   RecommendationError,
   resolvedAreaLabel
-} from "./recommendations.mjs?v=9";
+} from "./recommendations.mjs?v=10";
 
 const form = document.querySelector("#recommendation-form");
 const addressInput = document.querySelector("#address");

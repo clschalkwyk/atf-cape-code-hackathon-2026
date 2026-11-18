@@ -29,7 +29,7 @@ This PWA is deployed at <https://tyala-africa-pwa-production.up.railway.app>
 CORS policy is a wildcard (`Access-Control-Allow-Origin: *`) without
 credentials, which matches the app's anonymous, cookie-free requests.
 
-The service worker (`tyala-shell-v9`) intentionally excludes `config.js`,
+The service worker (`tyala-shell-v10`) intentionally excludes `config.js`,
 caches only the static app shell plus `crops.json`, and never handles
 cross-origin requests or non-GET requests. Recommendation responses are
 requested with `cache: "no-store"` and are not stored by the app. Results are
@@ -37,7 +37,7 @@ cleared when a new request starts or the browser reports an offline
 transition.
 
 `index.html` references shell assets with a deploy-scoped version query
-(`styles.css?v=9`, `app.mjs?v=9`) matching `tyala-shell-v9`. Cache-busting the
+(`styles.css?v=10`, `app.mjs?v=10`) matching `tyala-shell-v10`. Cache-busting the
 asset URLs guarantees that browsers still holding an older service-worker
 generation fetch fresh assets from the network on their first post-deploy
 load (their old cache only has the unversioned URLs), and the v9 worker's

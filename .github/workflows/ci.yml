@@ -1,0 +1,39 @@
+name: Tyala CI
+
+on:
+  push:
+    branches: [main, clschalkwyk-pwa-frontend]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-tests:
+    name: Python API and data tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run backend unit tests
+        run: python -m unittest discover -s tests -p "test_*.py" -v
+
+  frontend-tests:
+    name: Node PWA tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check frontend JavaScript syntax
+        run: |
+          node --check app.mjs
+          node --check recommendations.mjs
+          node --check service-worker.js
+      - name: Run frontend tests
+        run: node --test tests/*.test.mjs
