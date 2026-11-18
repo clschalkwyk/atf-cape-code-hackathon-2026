@@ -210,6 +210,22 @@ test("never accepts error or incomplete responses as an assessment", async () =>
   );
 });
 
+test("preserves the API's insufficient-evidence reason and request reference", async () => {
+  const message = "Historical records exist, but no defensible planting recommendation can be made.";
+  await assert.rejects(
+    fetchCropOptions("https://api.example.org/", buildRequest({ latitude: -1.2, longitude: 36.8 }),
+      async () => ({
+        ok: false,
+        status: 422,
+        json: async () => ({
+          error: { code: "insufficient_evidence", message, request_id: "req_evidence" }
+        })
+      })),
+    (error) => error.code === "insufficient_evidence" &&
+      error.message === message && error.requestId === "req_evidence"
+  );
+});
+
 test("reports a request timeout distinctly", async () => {
   await assert.rejects(
     fetchRecommendations("https://api.example.org", {}, (_url, options) => new Promise((_resolve, reject) => {

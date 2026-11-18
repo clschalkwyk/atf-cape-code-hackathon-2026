@@ -263,26 +263,12 @@ form.addEventListener("submit", async (event) => {
     showStatus("success", "Suggested crops are ready", "These are historically reported crops, not a recommendation of what to plant.");
   } catch (error) {
     if (sequence !== requestSequence) return;
-    if (error.code === "insufficient_evidence") {
-      recommendationList.replaceChildren(noRecordsCard());
-      freshness.replaceChildren();
-      const freshnessLabel = document.createElement("strong");
-      freshnessLabel.textContent = "Data freshness: ";
-      freshness.append(freshnessLabel, document.createTextNode(
-        "The coverage index for this area has no crop records in the pinned historical release."));
-      renderCaveats([]);
-      resultsHeadingArea.textContent = "Historically reported crops: this area";
-      results.hidden = false;
-      statusPanel.hidden = true;
-      hadResults = true;
-      return;
-    }
     const kind = !navigator.onLine ? "offline" : "error";
     const title = kind === "offline" ? "You're offline" :
       error.code === "timeout" ? "The request timed out" :
       error.code === "unavailable" ? "Service unavailable" :
       error.code === "unsupported_location" ? "Location not supported" :
-      error.code === "insufficient_evidence" ? "Not enough local records" :
+      error.code === "insufficient_evidence" ? "Not enough historical evidence" :
       error.code === "configuration" ? "App not connected" : "No crop list available";
     showStatus(kind, title, error.message || "The request failed. No crop list is shown.");
     if (error.requestId) appendText(statusPanel.querySelector("div"), "p", `Reference: ${error.requestId}`);

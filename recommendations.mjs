@@ -170,9 +170,13 @@ export async function postRecommendation(apiBaseUrl, request, fetchImpl = fetch,
     }
     if (!response.ok) {
       const code = payload && payload.error && payload.error.code;
+      const detail = payload && payload.error && payload.error.message;
+      const message = code === "insufficient_evidence" && typeof detail === "string" && detail.trim()
+        ? detail.trim()
+        : (errorMessages[code] || `The evidence service returned an error (${response.status}). No assessment is shown.`);
       throw new RecommendationError(
         code || "api_error",
-        errorMessages[code] || `The evidence service returned an error (${response.status}). No assessment is shown.`,
+        message,
         payload && payload.error && payload.error.request_id
       );
     }
