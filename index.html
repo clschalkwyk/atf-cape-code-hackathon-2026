@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#385819">
+    <meta name="description" content="Crops historically reported near your location, with planting windows and honesty notes from local records.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Tyala Africa">
+    <title>Tyala Africa | Crops reported near you</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="./assets/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css?v=10">
+    <script src="./config.js"></script>
+    <script type="module" src="./app.mjs?v=10"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Tyala Africa home">
+        <img src="./assets/icon.svg" alt="" width="34" height="34">
+        <span>Tyala Africa</span>
+      </a>
+      <span class="topbar-note">GROW WITH THE SEASON</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">YOUR FARM, YOUR AREA</p>
+        <h1 id="page-title">What has grown<br class="desktop-break"> near you?</h1>
+        <p class="intro-copy">See the crops reported in local records for your area — grounded in historical data, not a forecast.</p>
+      </section>
+
+      <section class="workspace" aria-label="Crop discovery planner">
+        <form id="recommendation-form" novalidate>
+          <div id="request-progress" class="request-progress" role="progressbar" aria-label="Checking local records" hidden></div>
+          <fieldset class="step">
+            <legend><span class="step-number">01</span><span>Your location</span></legend>
+            <p class="step-hint">Crops are listed for the area near your farm.</p>
+            <label for="address">Address, village, or district</label>
+            <input id="address" name="address" type="text" autocomplete="street-address"
+              maxlength="300" placeholder="e.g. district or nearest town" aria-describedby="location-help location-error">
+            <p id="location-help" class="field-help">Addresses are resolved to coordinates with OpenStreetMap Nominatim; only coordinates are sent to the evidence service and nothing is saved in this app.</p>
+            <button id="use-location" class="location-button" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/></svg> Use my current location
+            </button>
+            <p id="location-error" class="inline-error" role="alert" hidden></p>
+          </fieldset>
+
+          <button class="submit-button" type="submit">
+            <span>List crops for this location</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+          </button>
+          <p class="privacy-note">Your precise location is used only for this request.</p>
+        </form>
+
+        <aside class="season-card" aria-label="A note about suggestions">
+          <div class="sun-mark" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4.6"/><path d="M12 2.2v2.6M12 19.2v2.6M2.2 12h2.6M19.2 12h2.6M4.9 4.9l1.9 1.9M17.2 17.2l1.9 1.9M19.1 4.9l-1.9 1.9M6.8 17.2l-1.9 1.9"/></svg></div>
+          <p class="card-eyebrow">A THOUGHTFUL START</p>
+          <h2>Every farm is different.</h2>
+          <p>This list reflects historical records, not what must grow on your farm. Local knowledge matters too.</p>
+          <div class="card-rule"></div>
+          <p class="card-foot"><span aria-hidden="true"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 5.3 4.7 9 10 10-5.3 1-9 4.7-10 10-1-5.3-4.7-9-10-10 5.3-1 9-4.7 10-10Z"/></svg></span> Evidence-aware, never a guarantee.</p>
+        </aside>
+      </section>
+
+      <section id="status-panel" class="status-panel" role="status" aria-live="polite" aria-atomic="true" hidden>
+        <span id="status-icon" class="status-icon" aria-hidden="true"></span>
+        <div><h2 id="status-title"></h2><p id="status-message"></p></div>
+      </section>
+      <section id="results" class="results" aria-labelledby="results-title" hidden>
+        <div class="results-heading">
+          <div>
+            <p class="eyebrow">YOUR AREA'S RECORD</p>
+            <h2 id="results-title">Suggested crops to explore</h2>
+            <p id="results-area" class="rank-note"></p>
+          </div>
+          <p class="rank-note">Historical records · not a recommendation</p>
+        </div>
+        <div id="freshness" class="freshness"></div>
+        <div id="recommendation-list" class="recommendation-list"></div>
+        <div id="uncertainty" class="uncertainty"></div>
+        <p class="results-footer">Compare this list with local agricultural advice and your own farm experience.</p>
+      </section>
+    </main>
+    <footer><span>TYALA AFRICA</span><span>Built for better-informed planting decisions.</span></footer>
+  </body>
+</html>

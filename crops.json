@@ -1,0 +1,370 @@
+[
+  {
+    "id": "hsa-v1-2-avocado-d22c09bc",
+    "name": "Avocado"
+  },
+  {
+    "id": "hsa-v1-2-bambara-groundnut-afd4d23b",
+    "name": "Bambara groundnut"
+  },
+  {
+    "id": "hsa-v1-2-banana-f9782dd7",
+    "name": "Banana"
+  },
+  {
+    "id": "hsa-v1-2-barley-b904432b",
+    "name": "Barley"
+  },
+  {
+    "id": "hsa-v1-2-bean-hyacinth-89dd505e",
+    "name": "Bean (Hyacinth)"
+  },
+  {
+    "id": "hsa-v1-2-beans-mixed-b45ec27c",
+    "name": "Beans (mixed)"
+  },
+  {
+    "id": "hsa-v1-2-beans-red-2ccb2f83",
+    "name": "Beans (Red)"
+  },
+  {
+    "id": "hsa-v1-2-beans-rosecoco-09c3d60a",
+    "name": "Beans (Rosecoco)"
+  },
+  {
+    "id": "hsa-v1-2-beans-white-b853a52d",
+    "name": "Beans (White)"
+  },
+  {
+    "id": "hsa-v1-2-beet-ce80e5b7",
+    "name": "Beet"
+  },
+  {
+    "id": "hsa-v1-2-bush-bean-28355c98",
+    "name": "Bush Bean"
+  },
+  {
+    "id": "hsa-v1-2-cabbage-d37db978",
+    "name": "Cabbage"
+  },
+  {
+    "id": "hsa-v1-2-canola-seed-5b42c221",
+    "name": "Canola Seed"
+  },
+  {
+    "id": "hsa-v1-2-capsicum-chinense-09d64d0d",
+    "name": "Capsicum Chinense"
+  },
+  {
+    "id": "hsa-v1-2-carrots-5bb3e78b",
+    "name": "Carrots"
+  },
+  {
+    "id": "hsa-v1-2-cashew-unshelled-22d99003",
+    "name": "Cashew (unshelled)"
+  },
+  {
+    "id": "hsa-v1-2-cassava-b5cc7692",
+    "name": "Cassava"
+  },
+  {
+    "id": "hsa-v1-2-celery-17d78bdb",
+    "name": "Celery"
+  },
+  {
+    "id": "hsa-v1-2-cereal-crops-8a049d9a",
+    "name": "Cereal Crops"
+  },
+  {
+    "id": "hsa-v1-2-chat-460b3a7d",
+    "name": "Chat"
+  },
+  {
+    "id": "hsa-v1-2-chick-peas-fcde1699",
+    "name": "Chick Peas"
+  },
+  {
+    "id": "hsa-v1-2-chili-pepper-a084370f",
+    "name": "Chili Pepper"
+  },
+  {
+    "id": "hsa-v1-2-coffee-b0e1f06c",
+    "name": "Coffee"
+  },
+  {
+    "id": "hsa-v1-2-coriander-e9f8516a",
+    "name": "Coriander"
+  },
+  {
+    "id": "hsa-v1-2-cotton-38ba2144",
+    "name": "Cotton"
+  },
+  {
+    "id": "hsa-v1-2-cotton-acala-823121f9",
+    "name": "Cotton (Acala)"
+  },
+  {
+    "id": "hsa-v1-2-cotton-american-21d9a868",
+    "name": "Cotton (American)"
+  },
+  {
+    "id": "hsa-v1-2-cottonseed-ac55124c",
+    "name": "Cottonseed"
+  },
+  {
+    "id": "hsa-v1-2-cowpea-554a6cb3",
+    "name": "Cowpea"
+  },
+  {
+    "id": "hsa-v1-2-cucumber-bff0d9f9",
+    "name": "Cucumber"
+  },
+  {
+    "id": "hsa-v1-2-eggplant-84247c8a",
+    "name": "Eggplant"
+  },
+  {
+    "id": "hsa-v1-2-ethiopian-cabbage-ec7a299f",
+    "name": "Ethiopian Cabbage"
+  },
+  {
+    "id": "hsa-v1-2-fava-bean-4d8319f7",
+    "name": "Fava Bean"
+  },
+  {
+    "id": "hsa-v1-2-fenugreek-ae538f72",
+    "name": "Fenugreek"
+  },
+  {
+    "id": "hsa-v1-2-field-peas-065667fb",
+    "name": "Field Peas"
+  },
+  {
+    "id": "hsa-v1-2-fonio-421f2721",
+    "name": "Fonio"
+  },
+  {
+    "id": "hsa-v1-2-garlic-4e7bcd0c",
+    "name": "Garlic"
+  },
+  {
+    "id": "hsa-v1-2-geocarpa-groundnut-54468e57",
+    "name": "Geocarpa groundnut"
+  },
+  {
+    "id": "hsa-v1-2-ginger-544a9cb4",
+    "name": "Ginger"
+  },
+  {
+    "id": "hsa-v1-2-goussi-6b8581bf",
+    "name": "Goussi"
+  },
+  {
+    "id": "hsa-v1-2-grass-pea-8f70eadb",
+    "name": "Grass Pea"
+  },
+  {
+    "id": "hsa-v1-2-green-bean-cb37f304",
+    "name": "Green Bean"
+  },
+  {
+    "id": "hsa-v1-2-green-pea-92669d43",
+    "name": "Green Pea"
+  },
+  {
+    "id": "hsa-v1-2-green-peppers-08e68495",
+    "name": "Green Peppers"
+  },
+  {
+    "id": "hsa-v1-2-groundnuts-in-shell-405c92d3",
+    "name": "Groundnuts (In Shell)"
+  },
+  {
+    "id": "hsa-v1-2-hops-ee332425",
+    "name": "Hops"
+  },
+  {
+    "id": "hsa-v1-2-jute-9ea53a1e",
+    "name": "Jute"
+  },
+  {
+    "id": "hsa-v1-2-kale-39275916",
+    "name": "Kale"
+  },
+  {
+    "id": "hsa-v1-2-lentils-52b746b6",
+    "name": "Lentils"
+  },
+  {
+    "id": "hsa-v1-2-lettuce-c0e80db8",
+    "name": "Lettuce"
+  },
+  {
+    "id": "hsa-v1-2-linseed-50273eb1",
+    "name": "Linseed"
+  },
+  {
+    "id": "hsa-v1-2-macadamia-7b348598",
+    "name": "Macadamia"
+  },
+  {
+    "id": "hsa-v1-2-maize-637a42a5",
+    "name": "Maize"
+  },
+  {
+    "id": "hsa-v1-2-maize-yellow-f5373448",
+    "name": "Maize (Yellow)"
+  },
+  {
+    "id": "hsa-v1-2-melon-9b1b8c9a",
+    "name": "Melon"
+  },
+  {
+    "id": "hsa-v1-2-millet-0b39c9dd",
+    "name": "Millet"
+  },
+  {
+    "id": "hsa-v1-2-molokhia-5632176b",
+    "name": "Molokhia"
+  },
+  {
+    "id": "hsa-v1-2-mung-bean-0a548f46",
+    "name": "Mung bean"
+  },
+  {
+    "id": "hsa-v1-2-neug-108ac6da",
+    "name": "Neug"
+  },
+  {
+    "id": "hsa-v1-2-oats-4e1648f2",
+    "name": "Oats"
+  },
+  {
+    "id": "hsa-v1-2-okras-276d1536",
+    "name": "Okras"
+  },
+  {
+    "id": "hsa-v1-2-onions-dd5edb7b",
+    "name": "Onions"
+  },
+  {
+    "id": "hsa-v1-2-pam-nut-692cf92f",
+    "name": "Pam Nut"
+  },
+  {
+    "id": "hsa-v1-2-paprika-6923479c",
+    "name": "Paprika"
+  },
+  {
+    "id": "hsa-v1-2-pea-6f7fc5ee",
+    "name": "Pea"
+  },
+  {
+    "id": "hsa-v1-2-pepper-d9538cf9",
+    "name": "Pepper"
+  },
+  {
+    "id": "hsa-v1-2-pigeon-pea-a0d73ee7",
+    "name": "Pigeon Pea"
+  },
+  {
+    "id": "hsa-v1-2-pineapple-80421e00",
+    "name": "Pineapple"
+  },
+  {
+    "id": "hsa-v1-2-pole-bean-3f8f8e1a",
+    "name": "Pole Bean"
+  },
+  {
+    "id": "hsa-v1-2-potato-6d61374d",
+    "name": "Potato"
+  },
+  {
+    "id": "hsa-v1-2-pyrethrum-06d99e78",
+    "name": "Pyrethrum"
+  },
+  {
+    "id": "hsa-v1-2-rape-f2161cb1",
+    "name": "Rape"
+  },
+  {
+    "id": "hsa-v1-2-rice-1b9bc7b7",
+    "name": "Rice"
+  },
+  {
+    "id": "hsa-v1-2-sesame-seed-90b32119",
+    "name": "Sesame Seed"
+  },
+  {
+    "id": "hsa-v1-2-sorghum-b93f08e9",
+    "name": "Sorghum"
+  },
+  {
+    "id": "hsa-v1-2-sorghum-red-db67ddb0",
+    "name": "Sorghum (Red)"
+  },
+  {
+    "id": "hsa-v1-2-sorrel-e25fa28b",
+    "name": "Sorrel"
+  },
+  {
+    "id": "hsa-v1-2-soybean-211c88f5",
+    "name": "Soybean"
+  },
+  {
+    "id": "hsa-v1-2-squash-9f9a8456",
+    "name": "Squash"
+  },
+  {
+    "id": "hsa-v1-2-squash-and-melon-seeds-12b1341d",
+    "name": "Squash and Melon Seeds"
+  },
+  {
+    "id": "hsa-v1-2-sugarcane-ad32d6a3",
+    "name": "Sugarcane"
+  },
+  {
+    "id": "hsa-v1-2-sunflower-seed-75078730",
+    "name": "Sunflower Seed"
+  },
+  {
+    "id": "hsa-v1-2-sweet-potatoes-18b4376b",
+    "name": "Sweet Potatoes"
+  },
+  {
+    "id": "hsa-v1-2-taro-3664bbe9",
+    "name": "Taro"
+  },
+  {
+    "id": "hsa-v1-2-tea-017979e8",
+    "name": "Tea"
+  },
+  {
+    "id": "hsa-v1-2-teff-4b0fa3b1",
+    "name": "Teff"
+  },
+  {
+    "id": "hsa-v1-2-tobacco-d00a0fc1",
+    "name": "Tobacco"
+  },
+  {
+    "id": "hsa-v1-2-tomato-8289a984",
+    "name": "Tomato"
+  },
+  {
+    "id": "hsa-v1-2-velvet-bean-c7cf0834",
+    "name": "Velvet Bean"
+  },
+  {
+    "id": "hsa-v1-2-watermelon-4b4e11cc",
+    "name": "Watermelon"
+  },
+  {
+    "id": "hsa-v1-2-wheat-cca303e9",
+    "name": "Wheat"
+  },
+  {
+    "id": "hsa-v1-2-yams-2c33c7d4",
+    "name": "Yams"
+  }
+]
