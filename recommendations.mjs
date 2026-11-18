@@ -1,5 +1,17 @@
 export const REQUEST_TIMEOUT_MS = 15_000;
 
+const SHORT_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// Report exactly the months present in the source, preserving their order.
+// A min–max range would invent unreported months and misstate cross-year seasons.
+export function formatReportedMonths(months) {
+  if (!Array.isArray(months) || months.length === 0 ||
+      !months.every((month) => Number.isInteger(month) && month >= 1 && month <= 12)) {
+    return null;
+  }
+  return [...new Set(months)].map((month) => SHORT_MONTHS[month - 1]).join(", ");
+}
+
 export class RecommendationError extends Error {
   constructor(code, message, requestId = "") {
     super(message);

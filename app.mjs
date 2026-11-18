@@ -1,6 +1,7 @@
 import {
   buildRequest,
   fetchCropOptions,
+  formatReportedMonths,
   RecommendationError,
   resolvedAreaLabel
 } from "./recommendations.mjs?v=9";
@@ -124,20 +125,11 @@ async function geocodeAddress(address) {
   };
 }
 
-function monthRangeText(months) {
-  const valid = Array.isArray(months) &&
-    months.every((month) => Number.isInteger(month) && month >= 1 && month <= 12);
-  if (!valid || months.length === 0) return null;
-  const short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const names = [...new Set(months)].sort((a, b) => a - b).map((month) => short[month - 1]);
-  return names.length === 1 ? names[0] : `${names[0]} – ${names[names.length - 1]}`;
-}
-
 function seasonLine(season) {
   if (!season || typeof season.season_name !== "string" ||
       season.season_name.trim().length === 0) return null;
-  const planting = monthRangeText(season.planting_months);
-  const harvest = monthRangeText(season.harvest_months);
+  const planting = formatReportedMonths(season.planting_months);
+  const harvest = formatReportedMonths(season.harvest_months);
   if (!planting && !harvest) return null;
   const parts = [season.season_name.trim()];
   if (planting) parts.push(`plant ${planting}`);

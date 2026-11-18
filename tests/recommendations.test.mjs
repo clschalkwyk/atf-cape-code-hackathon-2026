@@ -4,9 +4,20 @@ import {
   buildRequest,
   fetchCropOptions,
   fetchRecommendations,
+  formatReportedMonths,
   RecommendationError,
   validateResponse
 } from "../recommendations.mjs";
+
+test("renders only reported months, preserving cross-year order and gaps", () => {
+  assert.equal(formatReportedMonths([10, 11, 12, 1, 2, 3]), "Oct, Nov, Dec, Jan, Feb, Mar");
+  assert.equal(formatReportedMonths([3, 5]), "Mar, May");
+  assert.equal(formatReportedMonths([1]), "Jan");
+  assert.equal(formatReportedMonths([10, 10, 11]), "Oct, Nov");
+  assert.equal(formatReportedMonths([]), null);
+  assert.equal(formatReportedMonths([0, 12]), null);
+  assert.equal(formatReportedMonths([3, "4"]), null);
+});
 
 const assessment = {
   request_id: "req_test",
