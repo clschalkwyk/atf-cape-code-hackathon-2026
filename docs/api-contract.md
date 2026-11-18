@@ -1,111 +1,113 @@
-# Historical crop evidence API contract
+# Crop recommendation API contract
 
-The normative JSON interface is [OpenAPI 3.1](../openapi.yaml), version
-`1.0.0`. The PWA calls `POST /v1/recommendations` with
-`Content-Type: application/json`. This MVP accepts a location and one crop
-catalog ID, then summarizes available local historical evidence. It does not
-rank crops or make a live agronomic recommendation.
+The normative JSON interface is [OpenAPI 3.1](../openapi.yaml), currently
+versioned as `1.0.0`. The PWA calls `POST /v1/recommendations` with
+`Content-Type: application/json`. The URL version is the compatibility
+boundary: additive optional fields may be introduced within `/v1`; changes
+that break existing clients require a new major path version.
 
-## Request and catalog compatibility
+## MVP geography and evidence policy
 
-`location` and `crop` are required. Location preserves the existing contract:
-provide exactly one of an `address` or a WGS 84 decimal-degree
-`latitude`/`longitude` pair. Addresses are resolved server-side. `crop.id` is
-the stable ID from the configured crop catalog and matches the existing
-response `crop.id` shape; display names are resolved server-side. A free-text
-crop name is not accepted as an identifier. No crop catalog file is currently
-defined in `main`, so the deployment must supply the catalog and its ID
-mapping.
+Africa is the intended MVP region, not a claim that every African country or
+location is supported. The deployed service resolves only exact HarvestStat
+Africa v1.2 areas present in the historical crop index. It does not evaluate
+agronomic suitability.
 
-Planting period, user weather, preferences, and any request for a future-year
-forecast are out of scope. The service must not use a client-supplied weather
-value or current forecast to imply suitability.
+See the [crop and regional data catalog](data-catalog.md) for a versioned
+source inventory and the HarvestStat Africa historical-coverage index. That
+index scopes exact location matching to areas with historical records; it is
+not crop-suitability evidence or a support allowlist for recommendations.
 
-## Historical outputs and evidence
+`POST /v1/locations/resolve` is a separate, location-only operation. It accepts
+WGS 84 latitude/longitude coordinates and returns an FNID only when one exact
+HarvestStat Africa v1.2 boundary contains the point and that FNID appears in
+the v1.2 historical crop coverage index. It does not geocode addresses, infer
+suitability, or use a nearest or parent-area fallback. Boundary and overlap
+points return `ambiguous_location`; points outside indexed areas return
+`unsupported_location`. A match proves only historical source coverage.
 
-- `likely_planting_window` is a recurring range of local calendar months.
-  Return it only when a local historical planting-calendar source explicitly
-  supports it. Month values are integers 1-12, inclusive. Mark whether the
-  range crosses a year boundary. Annual production or cropped-area totals
-  alone cannot establish planting months. HarvestStat-Africa's planting and
-  harvest calendar fields distinguish seasons (including cross-year seasons)
-  and do not represent actual phenological timing. If those fields are used,
-  describe the result only as recorded historical calendar metadata, never as
-  an accurate planting date or phenological prediction.
-- `local_historical_prevalence.share` is a proportion from 0 to 1: the
-  requested crop's reported cropped-area total divided by total comparable
-  reported cropped area for the same matched locality and observation period.
-  Numerator and denominator must use the same area unit, period, and reporting
-  scope; the response includes both totals and the observation years. If the
-  source does not have comparable crop-area records, prevalence is unavailable.
-  HarvestStat-Africa may support this historical statistic where its records
-  contain comparable area data; production volume alone must not be presented
-  as area prevalence.
-- `confidence_band.level` is a qualitative `low`, `moderate`, or `high`
-  evidence-strength label, with a rationale considering evidence amount and
-  age, geographic match, and source comparability. It is not a probability,
-  calibrated score, or statistical confidence interval. Do not assign a higher
-  band merely because multiple outputs are present. Deployment-specific
-  thresholds require review and validation.
-- `data.sources` identifies public source names, evidence type, observation
-  years where known, and retrieval time. These are historical source metadata,
-  not live weather freshness.
-- `caveats` must explain the material limits of the response. In particular,
-  historical prevalence describes reported past cultivation; it does not
-  prove what is best, current, or suitable on an individual farm. No live
-  weather suitability, phenological accuracy, yield, or future outcome is
-  claimed.
+`POST /v1/recommendations` accepts WGS 84 coordinates and an optional catalog
+`crop_id`.
 
-## Partial data and errors
+- **Location-first crop options (`crop_id` omitted).** The service resolves
+  the coordinates to one exact HarvestStat v1.2 area (no nearest or
+  parent-area fallback) and returns HTTP `200` with the crops that have
+  historical records in the pinned v1.2 coverage index for that exact area.
+  Each option carries the stable catalog `crop_id` for follow-up requests,
+  the crop label, a summary of historical occurrences (seasons and months
+  observed with raw record counts), and a qualitative evidence hint. Options
+  are ordered by label and carry no ranking; comparable-area shares are not
+  computed because the index has no validated denominator; top-level `notes`
+  restate the explicit caveats, including that HarvestStat calendar fields
+  are reporting seasons, not phenological timing. Absence from this list
+  means no indexed historical record in the pinned release; it does not mean
+  the crop is absent or unsuitable. A resolved area with zero indexed crop
+  records returns HTTP `422` with `insufficient_evidence`.
+- **Single-crop check (`crop_id` provided).** It currently returns HTTP `422`
+  with `insufficient_evidence`: the source index has no validated
+  comparable-area denominator or evidence thresholds, and HarvestStat season
+  fields are not actual phenological timing. No prevalence estimate, planting
+  recommendation, or suitability ranking is returned. Unknown crop IDs and
+  crops without local records also return `insufficient_evidence`.
 
-Return HTTP `200` with each indicator's explicit `status: unavailable` and a
-reason when the other indicator can be reported responsibly. Set confidence
-to `low` when the remaining evidence is sparse or geographically weak, and
-include a caveat explaining the missing indicator. If neither a supported
-planting window nor comparable local area prevalence can be reported, return
-HTTP `422` with `insufficient_evidence`, not an empty or guessed assessment.
-If evidence is present but does not meet the deployment's minimum for an
-indicator, mark that indicator unavailable rather than extrapolating; a
-remaining indicator may be returned only if it can still be described
-responsibly. When no indicator meets its minimum evidence requirement, return
-`insufficient_evidence`. The actual minimums must be set from verified source
-coverage before launch.
+## Request and units
 
-Return `unsupported_location` if no supported evidence geography can be
-matched, and `unsupported_crop` if `crop.id` is not present in the configured
-catalog. Never silently substitute a nearby locality or different crop.
-Field-shape errors use `validation_error`; malformed JSON is `400`, a
-non-JSON content type is `415`, rate limiting is `429`, and transient service
-failure is `503`. All errors use the common `error` envelope in the OpenAPI
-file. Evidence years and geographic coverage thresholds must be set from
-verified data before launch; this contract does not invent them.
+Requests use `location.latitude` and `location.longitude`, decimal degrees in
+WGS 84, and, when provided, exact catalog `crop_id` values. Omitting `crop_id`
+requests the location-first crop options list. Address input and geocoding
+are deferred. The location-resolution request uses coordinates only.
 
-Africa remains the intended MVP region, not a claim that every African country
-or location is supported. Only configured local evidence areas are supported.
-Return `unsupported_location` outside those areas rather than extrapolating
-from an undocumented neighbor.
+Errors use the common `error` envelope. `422` distinguishes invalid input,
+unsupported geography, ambiguous boundaries, and insufficient evidence.
+Malformed JSON uses `400`; a non-JSON content type uses `415`; transient
+service failure uses `503`. No single-crop recommendation success response is
+emitted by this MVP until the evidence gaps above are resolved; the
+location-only crop options response is an inventory of historical
+occurrences, not a recommendation.
 
 ## Browser, transport, and privacy assumptions
 
-- Serve the API over HTTPS only. CORS is enforced by the API. Allow only exact
-  configured PWA origins: development origins (for example
-  `http://localhost:5173`) and the deployed production origin must be
-  explicitly configured per environment. Do not use wildcard origins. Answer
-  `OPTIONS` preflights for `POST` and the `Content-Type` request header;
-  include `Vary: Origin` when reflecting the allowlisted origin. Cookie
-  credentials are not part of this MVP.
-- Requests are anonymous; do not put provider credentials or API keys in the
-  PWA. Keep any provider secrets server-side and apply server-side abuse
-  controls.
-- Return `Cache-Control: no-store` for all location requests, including
-  errors. Do not put addresses or precise coordinates in URLs, analytics, or
-  ordinary logs. Minimize request-body retention. `request_id` must not encode
-  request data.
+- Serve the API over HTTPS only. CORS allows any origin (`*`) for anonymous
+  requests and does not allow credentials. Answer `OPTIONS` preflights for
+  `GET`, `POST`, and the `Content-Type` request header.
+- The MVP assumes anonymous requests (no user login or API key in the PWA).
+  Rate limiting is not implemented by this service; apply edge-level abuse
+  controls before broad public use.
+- Return `Cache-Control: no-store` for all responses to location requests,
+  including errors. Do not place addresses or precise coordinates in URLs,
+  analytics, logs, or persistent storage. Request bodies are processed in
+  memory only. `request_id` is opaque and does not encode request data.
 
 ## PWA request example
 
 Configure the API base URL at build/deployment time; it is a public endpoint,
-not a secret:
+not a secret. The browser sends no provider credential:
+
+```js
+// Location-first: list historically reported crops for the resolved area.
+const optionsResponse = await fetch(`${API_BASE_URL}/v1/recommendations`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    location: { latitude: -1.2864, longitude: 36.8172 }
+  })
+});
+
+const optionsResult = await optionsResponse.json();
+if (!optionsResponse.ok) {
+  // Use optionsResult.error.code for a specific, user-safe message.
+  throw new Error(optionsResult.error.message);
+}
+// optionsResult.resolved_location: the exact area (FNID, country, admin level).
+// optionsResult.options: { crop_id, crop_label, summary, evidence_hint } per
+// crop, ordered by label with no ranking. optionsResult.notes carries the
+// explicit caveats; render them, and treat HarvestStat months as reporting
+// seasons, not planting guidance. A crop_id from the list can be sent with
+// coordinates for the single-crop historical-evidence check.
+```
+
+Single-crop historical-evidence check (note: it currently always answers
+`422` with `insufficient_evidence`):
 
 ```js
 const response = await fetch(`${API_BASE_URL}/v1/recommendations`, {
@@ -113,21 +115,37 @@ const response = await fetch(`${API_BASE_URL}/v1/recommendations`, {
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     location: { latitude: -1.2864, longitude: 36.8172 },
-    crop: { id: "crop-example-a" }
+    crop_id: "hsa-v1-2-maize-637a42a5"
   })
 });
 
 const result = await response.json();
 if (!response.ok) {
+  // Use result.error.code for a specific, user-safe message.
   throw new Error(result.error.message);
 }
 ```
 
-## Decisions before implementation
+For an administrative-area lookup without crop ranking, call
+`POST /v1/locations/resolve`:
 
-- Publish the crop catalog and stable ID mapping consumed by `crop.id`.
-- Define supported evidence geographies, minimum historical coverage, and
-  confidence-band thresholds using verified datasets and agronomic review.
-- Confirm each source's meaning, observation period, and whether its area
-  records are comparable before reporting a prevalence share.
-- Confirm production and local PWA origins for deployment configuration.
+```js
+const response = await fetch(`${API_BASE_URL}/v1/locations/resolve`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    location: { latitude: -1.2864, longitude: 36.8172 }
+  })
+});
+const result = await response.json();
+if (!response.ok) throw new Error(result.error.message);
+// result.resolved_location contains FNID, country, admin level, and names.
+```
+
+The coordinate-resolution source is the [pinned HarvestStat Africa v1.2
+boundary GeoPackage](../data/catalog/v1/hvstat_africa_boundary_v1.2.gpkg),
+joined to the [v1.2 historical coverage index](../data/catalog/v1/harveststat-coverage-v1.2.csv).
+The catalog documents its MIT terms, artifact hash, EPSG:4326 CRS, administrative
+resolution, and limitations. Exact matches return source FNIDs only; ambiguous
+or uncovered points do not fall back to another area. The resolver does not log
+or store coordinates.

@@ -1,106 +1,139 @@
 # Tyala Africa
 
-A dependency-free, installable, responsive PWA that lists **crops historically
-reported near a farmer's location**, with planting windows, record coverage,
-and honest caveats from the Historical Crop Evidence API
-(`POST /v1/recommendations`).
+Tyala Africa is a location-first crop advisory for African smallholder farmers: enter your location, and see the crops that have historically been reported there. Evidence is framed honestly — every answer is a historical-records lookup against the pinned HarvestStat-Africa v1.2 release, not the output of a suitability model. The system makes no agronomic claims: it does not rank crops, predict yields, or model phenology. It reports what the data records for your exact administrative area, and every response explains exactly what that means.
 
-## Quick start
+## Live demo
 
-```sh
-# Serve from the repo root (any static server works)
-python3 -m http.server 5173
-# then open http://localhost:5173
-```
+Both services are deployed on Railway:
 
-No build step or dependencies are required. Run the validation tests with
-`node --test tests/*.test.mjs`.
+| Service | URL |
+| --- | --- |
+| API | https://crop-advisory-api-production.up.railway.app |
+| PWA (web app) | https://tyala-africa-pwa-production.up.railway.app |
 
-## Configuration
+API endpoints:
 
-The API base URL lives in `config.js` as public configuration (never a
-secret) and defaults to the deployed API:
+- `GET /healthz`
+- `POST /v1/locations/resolve` — resolve coordinates to a HarvestStat-Africa admin-area FNID
+- `POST /v1/recommendations` — the historically reported crop options for one administrative area
 
-```js
-window.CROP_APP_CONFIG = {
-  API_BASE_URL: "https://crop-advisory-api-production.up.railway.app/"
-};
-```
+## How it works
 
-It must be an HTTPS origin without a path, query, or credentials
-(`localhost`/`127.0.0.1` with `http:` is allowed for development).
+1. **Place → coordinates, in the browser.** The PWA geocodes an address with OpenStreetMap Nominatim, or reads the device location directly.
+2. **Coordinates → administrative area.** The API maps the point to a HarvestStat-Africa admin-area FNID using the pinned v1.2 boundaries and a standard-library point-in-polygon test.
+3. **Area → historical crop evidence.** A location-only request returns the historically reported crop options for that exact area: `crop_id`, `crop_label`, `record_count`, `seasons_observed` (planting/harvest months per reported season), `evidence_hint` and response-level `notes`.
+4. **Optional single-crop drill-in.** Passing a `crop_id` asks for detail on one crop: planting window, prevalence, confidence band and caveats. When the evidence for that area does not support this assessment, the API answers honestly with a `422` `insufficient_evidence` response instead of inventing a number.
 
-## API contract
+## Sample request and response
 
-The PWA calls one endpoint on the deployed API, **location-first**:
+A real, verified request against the live API (trimmed):
 
-```
-POST {API_BASE_URL}/v1/recommendations
+```http
+POST /v1/recommendations
 Content-Type: application/json
 
+{"location": {"latitude": -1.2864, "longitude": 36.8172}}
+```
+
+Trimmed response (Nairobi, Kenya; first two of the returned options):
+
+```json
 {
-  "location": { "latitude": -1.2864, "longitude": 36.8172 }
+  "resolved_location": {
+    "fnid": "KE2013A147",
+    "country_code": "KE",
+    "country": "Kenya",
+    "admin_level": 1,
+    "admin_1": "Nairobi"
+  },
+  "options": [
+    {
+      "crop_id": "hsa-v1-2-banana-f9782dd7",
+      "crop_label": "Banana",
+      "summary": {
+        "record_count": 3,
+        "seasons_observed": [
+          {"season_name": "Annual", "planting_months": [1], "harvest_months": [12]}
+        ]
+      },
+      "evidence_hint": "3 source records across 1 reported season."
+    },
+    {
+      "crop_id": "hsa-v1-2-beans-mixed-b45ec27c",
+      "crop_label": "Beans (mixed)",
+      "summary": {
+        "record_count": 35,
+        "seasons_observed": [
+          {"season_name": "Annual", "planting_months": [1], "harvest_months": [12]},
+          {"season_name": "Long", "planting_months": [3], "harvest_months": [8]}
+          // … remaining (Short) season entry trimmed
+        ]
+      },
+      "evidence_hint": "35 source records across 3 reported seasons."
+    }
+    // … remaining options trimmed
+  ],
+  "notes": [
+    "Options are crops with historical records in the pinned HarvestStat Africa v1.2 coverage index for this exact administrative area; this is not a suitability ranking or recommendation.",
+    "Record counts are raw source record counts; no prevalence, share, or ranking is computed.",
+    "HarvestStat season and month fields describe reported seasons; they are not phenological timing.",
+    "Absence from this list means no indexed historical record in the pinned release; it does not mean the crop is absent or unsuitable."
+  ]
 }
 ```
 
-- **Location-first flow**: the farmer provides a location (device geolocation
-  or an address resolved client-side to coordinates with OpenStreetMap
-  Nominatim — only coordinates are sent), and the API returns the list of
-  crops historically reported in that area (crop ids + names, planting
-  windows/record coverage when available, evidence details).
-- `buildRequest` still supports an optional second argument (a catalog
-  `crop_id`) for a single-crop historical assessment; the UI uses the
-  location-only list on first run, with per-crop drill-in available later.
-- The response schema is documented in [`openapi.yaml`](./openapi.yaml) and
-  validated client-side in `recommendations.mjs` (strict on crop identity and
-  the matched area; renders whatever evidence fields the service returns).
+## Try it — tested locations
 
-## States handled
+`POST /v1/recommendations` with a location and get the crop options list back; the results below were captured live against the running API:
 
-| State | Behaviour |
-|---|---|
-| Loading | Status panel with in-progress copy |
-| Success | Suggested-crops list for the matched area (empty list rendered honestly, nothing fabricated) |
-| Insufficient evidence (422) | Clear message with request reference |
-| Unsupported location | Explanation with guidance |
-| Rate limited (429) / Service unavailable (503) | Retry prompts |
-| Offline | Live status, results cleared, shell served from SW cache |
-| Timeout / network error | Distinct messages with retry guidance |
+| Location | Coords | Result |
+|---|---|---|
+| Nairobi, Kenya | -1.2864, 36.8172 | 18 crops — Banana, Beans (mixed) 35 records, Cabbage, Cassava, Coffee |
+| Kano, Nigeria | 12.0022, 8.5920 | 16 crops — Cassava (13), Cotton, Cowpea, Groundnuts, Maize (25 records each) |
+| Ouagadougou, Burkina Faso | 12.3714, -1.5198 | 12 crops — Bambara groundnut (39), Cotton (27), Cowpea (39), Groundnuts (40) |
+| Accra, Ghana | 5.6037, -0.1870 | 4 crops — Banana (2), Cassava (26), Maize (27), Rice (27) |
+| Kampala, Uganda | 0.3476, 32.5825 | 7 crops — Banana, Beans (mixed), Cassava, Groundnuts |
 
-Crops are presented as **historically reported** — never as a recommendation,
-agronomic guarantee, live forecast, or ranking. Caveats from the API are
-always displayed.
+Cairo, Egypt (30.0444, 31.2357) and Lilongwe, Malawi (-13.9626, 33.7741) return an honest `unsupported_location` state — outside the HarvestStat v1.2 coverage index.
 
-## Files
+## Architecture
 
-```
-index.html              — app shell (single location step)
-app.mjs                 — application logic, geocoding, rendering
-recommendations.mjs     — request building, validation, API client
-config.js               — configurable API base URL
-crops.json              — crop catalog snapshot (labels; used by future drill-in)
-styles.css              — styles (Cappy-derived brand tokens as CSS custom properties)
-manifest.webmanifest    — PWA manifest (installable)
-service-worker.js       — offline app-shell caching
-assets/icon.svg|png     — app icon
-openapi.yaml            — API contract
-docs/api-contract.md    — contract narrative
-docs/pwa-deployment.md  — deployment and configuration notes
-tests/                  — request/response validation tests
-```
+- **API** — `scripts/api_server.py`: a zero-dependency Python API (standard library only) with 23 passing tests. Coordinates → FNID is plain JSON plus point-in-polygon geometry — no spatial database or runtime data service.
+- **Data** — pinned HarvestStat Africa v1.2 release: administrative boundaries plus a pre-built coverage index of 217,487 source records across 33 countries, 92 crop labels and 20,177 FNID·crop·season groups.
+- **Frontend PWA** — vanilla ES modules with no build step; a stepped shell; service worker offline shell caching; and an earthy, Cappy-derived palette rooted in African agri identity — green `#385819`, orange `#B65512`, alert `#A72503`, ink `#2A2822`, paper `#F4F1E8`, beige `#E6D9B4`.
 
-## PWA features
+## Run locally and tests
 
-- **Installable**: manifest with standalone display, icons, theme color
-  `#385819`.
-- **Offline**: service worker (`tyala-shell-v9`) caches the app shell and
-  `crops.json`; navigation is network-first with cache fallback.
-- **Responsive**: works from 320px to desktop widths.
-- **Accessible**: semantic HTML, ARIA live regions, keyboard focus styles,
-  reduced-motion support.
+- **API:** `python3 scripts/api_server.py` — Python standard library only, nothing to install.
+- **Frontend:** from the PWA directory, `node --test` (Node's built-in test runner, no extra packages).
+- **API base URL:** point the PWA at a different API by setting `window.CROP_API_BASE_URL` before the app modules load.
 
 ## Deployment
 
-Deployed as a static site at
-<https://tyala-africa-pwa-production.up.railway.app>. See
-[`docs/pwa-deployment.md`](./docs/pwa-deployment.md).
+- Railway project `crop-advisory` hosts two services: `tyala-africa-pwa` and `crop-advisory-api` — the two demo URLs above.
+- **CORS is open by design** — `Access-Control-Allow-Origin: *`, methods `GET, POST, OPTIONS`, no credentials (verified live via preflight).
+- **Service-level rate limiting is not implemented.** The API contract reserves the `429 rate_limited` response so it can be added without breaking clients; until then the endpoints are open.
+
+## What this data is — and is not
+
+- **Reported seasons, not plant biology.** HarvestStat-Africa calendar fields describe reported seasons, not phenological timing.
+- **Coverage, not yields.** `record_count` is raw source coverage — it is not a yield, share, prevalence estimate or ranking.
+- **Absence is not impossibility.** A crop missing from the results only means there is no indexed historical record in the pinned release for that area, not that the crop can't grow there.
+- **A frame for decisions, not a decision.** Farmers should compare this historical evidence with local advice and their own farm experience.
+
+## Presentation slides
+
+The presentation slides for this project:
+
+![Tyala Africa presentation slide 1](slides/sl1.jpeg)
+
+![Tyala Africa presentation slide 2](slides/sl2.jpeg)
+
+![Tyala Africa presentation slide 3](slides/sl3.jpeg)
+
+![Tyala Africa presentation slide 4](slides/sl4.jpeg)
+
+## License and attribution
+
+- Crop history and boundaries: [HarvestStat Africa](https://github.com/HarvestStat/HarvestStat-Africa), boundaries pinned to release **v1.2**.
+- Address search: [OpenStreetMap Nominatim](https://nominatim.openstreetmap.org/).

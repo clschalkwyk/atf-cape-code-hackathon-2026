@@ -1,0 +1,908 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/clschalkwyk/atf-cape-code-hackathon-2026/main/data/catalog/v1/catalog.schema.json",
+  "title": "Crop and regional suitability catalog",
+  "description": "Versioned source register and normalized crop-profile schema. Catalog values must distinguish sourced facts, proposed schema fields, and missing evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "catalog_schema_version",
+    "catalog_version",
+    "accessed_on",
+    "scope_statement",
+    "sources",
+    "crop_profiles",
+    "regional_coverage"
+  ],
+  "properties": {
+    "catalog_schema_version": {
+      "const": "1.0.0"
+    },
+    "catalog_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "accessed_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "scope_statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "crop_profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/cropProfile"
+      }
+    },
+    "regional_coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "schema_path",
+        "source_id",
+        "record_count",
+        "query_keys",
+        "absence_semantics"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schema_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "query_keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "absence_semantics": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generated_on": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "name",
+        "source_type",
+        "catalog_status",
+        "dataset_version",
+        "primary_url",
+        "accessed_on",
+        "license",
+        "spatial_coverage",
+        "temporal_coverage",
+        "freshness",
+        "limitations",
+        "references"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_type": {
+          "enum": [
+            "historical_crop_statistics",
+            "agronomy",
+            "crop_suitability",
+            "soil",
+            "climate",
+            "boundary"
+          ]
+        },
+        "catalog_status": {
+          "enum": [
+            "coverage_indexed",
+            "candidate_not_ingested",
+            "candidate"
+          ]
+        },
+        "dataset_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "primary_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "source_artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "url",
+            "git_blob_sha",
+            "size_bytes"
+          ],
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "git_blob_sha": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "size_bytes": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "accessed_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "license": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "status",
+            "terms_url",
+            "notes"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "confirmed",
+                "dataset_specific_review_required"
+              ]
+            },
+            "terms_url": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "spatial_coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "description",
+            "resolution"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "resolution": {
+              "type": "string"
+            },
+            "countries": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          }
+        },
+        "temporal_coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "description",
+            "start_year",
+            "end_year"
+          ],
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "start_year": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "end_year": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        },
+        "freshness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_updated_on",
+            "update_cycle"
+          ],
+          "properties": {
+            "source_updated_on": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date"
+            },
+            "update_cycle": {
+              "type": "string"
+            }
+          }
+        },
+        "observed_coverage": {
+          "type": "object",
+          "description": "Computed only from the pinned HarvestStat Africa v1.2 CSV; omitted for sources not ingested.",
+          "additionalProperties": false,
+          "required": [
+            "record_count",
+            "country_count",
+            "crop_product_count",
+            "season_label_count",
+            "admin_level_country_counts",
+            "planting_year_range",
+            "harvest_year_range"
+          ],
+          "properties": {
+            "record_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "country_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "crop_product_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "season_label_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "admin_level_country_counts": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "planting_year_range": {
+              "$ref": "#/$defs/yearRange"
+            },
+            "harvest_year_range": {
+              "$ref": "#/$defs/yearRange"
+            }
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title",
+              "url",
+              "accessed_on"
+            ],
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "accessed_on": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "yearRange": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "integer"
+      }
+    },
+    "profileField": {
+      "type": "object",
+      "required": [
+        "status",
+        "source_ids"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "sourced",
+            "proposed",
+            "missing"
+          ]
+        },
+        "source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "sourced"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "source_ids": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "missing"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "source_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "cropProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "crop_id",
+        "common_name",
+        "scientific_name",
+        "identity_status",
+        "identity_source_id",
+        "growing_duration_days",
+        "temperature_requirements_c",
+        "rainfall_requirements_mm",
+        "water_requirement",
+        "soil_preferences",
+        "planting_window_status",
+        "planting_windows"
+      ],
+      "properties": {
+        "crop_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "common_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scientific_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "identity_status": {
+          "enum": [
+            "source_label_only",
+            "taxonomically_verified"
+          ]
+        },
+        "identity_source_id": {
+          "type": "string"
+        },
+        "growing_duration_days": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/profileField"
+            },
+            {
+              "type": "object",
+              "required": [
+                "minimum",
+                "maximum"
+              ],
+              "properties": {
+                "minimum": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "maximum": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "missing"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "minimum": {
+                    "const": null
+                  },
+                  "maximum": {
+                    "const": null
+                  }
+                }
+              }
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "temperature_requirements_c": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/profileField"
+            },
+            {
+              "type": "object",
+              "required": [
+                "minimum",
+                "maximum",
+                "growth_stage"
+              ],
+              "properties": {
+                "minimum": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "maximum": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "growth_stage": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "missing"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "minimum": {
+                    "const": null
+                  },
+                  "maximum": {
+                    "const": null
+                  },
+                  "growth_stage": {
+                    "const": null
+                  }
+                }
+              }
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "rainfall_requirements_mm": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/profileField"
+            },
+            {
+              "type": "object",
+              "required": [
+                "minimum_total",
+                "maximum_total",
+                "period_days"
+              ],
+              "properties": {
+                "minimum_total": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "maximum_total": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "period_days": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "missing"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "minimum_total": {
+                    "const": null
+                  },
+                  "maximum_total": {
+                    "const": null
+                  },
+                  "period_days": {
+                    "const": null
+                  }
+                }
+              }
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "water_requirement": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/profileField"
+            },
+            {
+              "type": "object",
+              "required": [
+                "value",
+                "unit",
+                "basis"
+              ],
+              "properties": {
+                "value": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "unit": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "basis": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "missing"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "value": {
+                    "const": null
+                  },
+                  "unit": {
+                    "const": null
+                  },
+                  "basis": {
+                    "const": null
+                  }
+                }
+              }
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "soil_preferences": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/profileField"
+            },
+            {
+              "type": "object",
+              "required": [
+                "texture_classes",
+                "ph_minimum",
+                "ph_maximum"
+              ],
+              "properties": {
+                "texture_classes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "uniqueItems": true
+                },
+                "ph_minimum": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 14
+                },
+                "ph_maximum": {
+                  "type": [
+                    "number",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 14
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "status": {
+                    "const": "missing"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "texture_classes": {
+                    "maxItems": 0
+                  },
+                  "ph_minimum": {
+                    "const": null
+                  },
+                  "ph_maximum": {
+                    "const": null
+                  }
+                }
+              }
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "planting_window_status": {
+          "enum": [
+            "sourced",
+            "proposed",
+            "missing"
+          ]
+        },
+        "planting_windows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "country_code",
+              "admin_level",
+              "admin_code",
+              "season_label",
+              "start_month",
+              "end_month",
+              "source_ids"
+            ],
+            "properties": {
+              "country_code": {
+                "type": "string",
+                "pattern": "^[A-Z]{2}$"
+              },
+              "admin_level": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "enum": [
+                  1,
+                  2,
+                  null
+                ]
+              },
+              "admin_code": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "season_label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "start_month": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "end_month": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "source_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "identity_status": {
+                    "const": "source_label_only"
+                  }
+                },
+                "required": [
+                  "identity_status"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "scientific_name": {
+                    "const": null
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "planting_window_status": {
+                    "const": "sourced"
+                  }
+                },
+                "required": [
+                  "planting_window_status"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "planting_windows": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "planting_window_status": {
+                    "const": "missing"
+                  }
+                },
+                "required": [
+                  "planting_window_status"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "planting_windows": {
+                    "maxItems": 0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
