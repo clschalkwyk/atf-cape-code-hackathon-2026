@@ -323,7 +323,8 @@ resetWeather();
 
 locationButton.addEventListener("click", () => {
   const selected = ++selectionSequence;
-  resetWeather("Choose a location to load today's weather.");
+  selectedCoordinates = null;
+  resetWeather("Waiting for your location permission…");
   if (!navigator.geolocation) {
     selectedCoordinates = null;
     addressInput.focus();
