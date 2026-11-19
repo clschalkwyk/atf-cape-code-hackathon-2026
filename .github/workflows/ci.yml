@@ -34,6 +34,7 @@ jobs:
         run: |
           node --check app.mjs
           node --check recommendations.mjs
+          node --check weather.mjs
           node --check service-worker.js
       - name: Run frontend tests
         run: node --test tests/*.test.mjs
@@ -64,7 +65,7 @@ jobs:
           docker run -d --name tyala-pwa -e PORT=8080 -p 8080:8080 tyala-pwa:ci
           for attempt in $(seq 1 30); do
             if curl --fail --silent http://127.0.0.1:8080/ | grep -q 'Tyala Africa'; then
-              curl --fail --silent http://127.0.0.1:8080/service-worker.js | grep -q 'tyala-shell-v10'
+              curl --fail --silent http://127.0.0.1:8080/service-worker.js | grep -q 'tyala-shell-v11'
               exit $?
             fi
             sleep 1

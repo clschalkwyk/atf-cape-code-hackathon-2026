@@ -47,10 +47,12 @@ jobs:
               assert status == 200 and json.loads(health)["status"] == "ok", ("health", status, health[:200])
 
               status, _, html = request(pwa + "/")
-              assert status == 200 and b"app.mjs?v=10" in html, ("PWA HTML", status, html[:200])
+              assert status == 200 and b"app.mjs?v=11" in html, ("PWA HTML", status, html[:200])
               status, _, worker = request(pwa + "/service-worker.js")
-              assert status == 200 and b"tyala-shell-v10" in worker, ("service worker", status)
+              assert status == 200 and b"tyala-shell-v11" in worker, ("service worker", status)
 
+              status, _, weather_module = request(pwa + "/weather.mjs")
+              assert status == 200 and b"api.open-meteo.com" in weather_module, ("weather module", status)
               status, _, hidden = request(pwa + "/data/catalog/v1/catalog.json")
               assert status == 404, ("PWA data exposure", status)
 
@@ -69,7 +71,7 @@ jobs:
                   )
                   assert status == 403 and not headers.get("Access-Control-Allow-Origin"), ("rejected origin", method, status, dict(headers))
                   assert json.loads(data)["error"]["code"] == "forbidden_origin", ("error code", data[:200])
-              print("PASS: PWA, API, approved CORS, rejected CORS, no sensitive PWA data, and Nairobi crop options")
+              print("PASS: PWA, weather module, API, approved CORS, rejected CORS, no sensitive PWA data, and Nairobi crop options")
 
           # GitHub push and Railway deploy triggers can race: allow the new
           # container's health check and rollout to settle before verifying.

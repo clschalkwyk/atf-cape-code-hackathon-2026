@@ -32,7 +32,20 @@ for development. If hosting the PWA on another domain, set `CORS_ALLOWED_ORIGINS
 on the API service to the comma-separated approved browser origins. Requests
 do not include cookies or credentials.
 
-The service worker (`tyala-shell-v10`) intentionally excludes `config.js`,
+After the farmer provides an address or consents to device location, the PWA
+requests model-based current conditions from Open-Meteo with those coordinates.
+The weather card shows the farm's local date and greeting, current temperature
+and conditions, today's forecast high/low, humidity, wind, feels-like
+temperature, and recent precipitation. This is **context only** and never
+enters the historical crop evidence or suitability logic. Failure to fetch
+weather does not block the crop API. An optional reverse-geocoding request
+labels GPS locations; coordinates are never persisted by the app.
+
+Open-Meteo requires attribution and its free hosted API is restricted to
+non-commercial use. A commercial Tyala deployment must use a licensed provider
+or plan and keep any API keys outside browser source.
+
+The service worker (`tyala-shell-v11`) intentionally excludes `config.js`,
 caches only the static app shell plus `crops.json`, and never handles
 cross-origin requests or non-GET requests. Recommendation responses are
 requested with `cache: "no-store"` and are not stored by the app. Results are
@@ -40,10 +53,10 @@ cleared when a new request starts or the browser reports an offline
 transition.
 
 `index.html` references shell assets with a deploy-scoped version query
-(`styles.css?v=10`, `app.mjs?v=10`) matching `tyala-shell-v10`. Cache-busting the
+(`styles.css?v=11`, `app.mjs?v=11`) matching `tyala-shell-v11`. Cache-busting the
 asset URLs guarantees that browsers still holding an older service-worker
 generation fetch fresh assets from the network on their first post-deploy
-load (their old cache only has the unversioned URLs), and the v9 worker's
+load (their old cache only has the unversioned URLs), and the v11 worker's
 `activate` handler deletes every older `tyala-shell-*` / `fieldnote-shell-*`
 cache once it claims the page.
 

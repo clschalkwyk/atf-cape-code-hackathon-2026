@@ -4,7 +4,13 @@ import {
   formatReportedMonths,
   RecommendationError,
   resolvedAreaLabel
-} from "./recommendations.mjs?v=10";
+} from "./recommendations.mjs?v=11";
+import {
+  fetchTodayWeather,
+  WEATHER_REFRESH_MS,
+  weatherDate,
+  weatherGreeting
+} from "./weather.mjs?v=11";
 
 const form = document.querySelector("#recommendation-form");
 const addressInput = document.querySelector("#address");
@@ -21,10 +27,34 @@ const resultsTitle = document.querySelector("#results-title");
 const recommendationList = document.querySelector("#recommendation-list");
 const freshness = document.querySelector("#freshness");
 const uncertainty = document.querySelector("#uncertainty");
+const weatherNodes = {
+  date: document.querySelector("#weather-date"),
+  greeting: document.querySelector("#weather-greeting"),
+  location: document.querySelector("#weather-location"),
+  values: document.querySelector("#weather-values"),
+  status: document.querySelector("#weather-status"),
+  refresh: document.querySelector("#weather-refresh"),
+  symbol: document.querySelector("#weather-symbol"),
+  temp: document.querySelector("#weather-temp"),
+  condition: document.querySelector("#weather-condition"),
+  range: document.querySelector("#weather-range"),
+  feels: document.querySelector("#weather-feels"),
+  humidity: document.querySelector("#weather-humidity"),
+  wind: document.querySelector("#weather-wind"),
+  rain: document.querySelector("#weather-rain")
+};
 
 let selectedCoordinates = null;
 let requestSequence = 0;
 let hadResults = false;
+let selectionSequence = 0;
+let weatherSequence = 0;
+let weatherController = null;
+let weatherLocation = null;
+let weatherPlace = "";
+let weatherLocationKey = "";
+let weatherFetchedAt = 0;
+let weatherPending = false;
 
 const messageForLocationError = (error) => {
   if (!navigator.onLine) return "You're offline, so this location could not be checked. Reconnect and try again.";
@@ -189,7 +219,112 @@ function renderOptions(data) {
   results.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function coordinateLabel(point) {
+  const lat = `${Math.abs(point.latitude).toFixed(2)}°${point.latitude < 0 ? "S" : "N"}`;
+  const lon = `${Math.abs(point.longitude).toFixed(2)}°${point.longitude < 0 ? "W" : "E"}`;
+  return `Your farm · ${lat}, ${lon}`;
+}
+
+function resetWeather(message = "Choose a location below to see today's conditions.") {
+  weatherSequence++;
+  weatherController?.abort();
+  weatherController = null;
+  weatherLocation = null;
+  weatherPlace = "";
+  weatherLocationKey = "";
+  weatherFetchedAt = 0;
+  weatherPending = false;
+  weatherNodes.location.textContent = "Choose your farm location";
+  weatherNodes.values.hidden = true;
+  weatherNodes.refresh.disabled = true;
+  weatherNodes.status.textContent = message;
+  weatherNodes.date.textContent = weatherDate();
+  weatherNodes.greeting.textContent = weatherGreeting();
+}
+
+async function loadWeather(point, place, force = false) {
+  const key = `${point.latitude.toFixed(5)},${point.longitude.toFixed(5)}`;
+  weatherLocation = point;
+  weatherPlace = place;
+  weatherNodes.location.textContent = place;
+  if (!force && weatherLocationKey === key &&
+      (weatherPending || (weatherFetchedAt > 0 && Date.now() - weatherFetchedAt < WEATHER_REFRESH_MS))) return;
+  weatherLocationKey = key;
+  weatherFetchedAt = 0;
+  weatherSequence++;
+  const token = weatherSequence;
+  weatherController?.abort();
+  weatherController = new AbortController();
+  weatherPending = true;
+  weatherNodes.values.hidden = true;
+  weatherNodes.refresh.disabled = true;
+  weatherNodes.status.textContent = "Checking today's weather for this location…";
+  try {
+    const weather = await fetchTodayWeather(point, fetch, 10_000, weatherController.signal);
+    if (token !== weatherSequence) return;
+    weatherFetchedAt = Date.now();
+    weatherNodes.date.textContent = weatherDate(new Date(), weather.timezone);
+    weatherNodes.greeting.textContent = weatherGreeting(new Date(), weather.timezone);
+    weatherNodes.temp.textContent = `${Math.round(weather.temperature)}°C`;
+    weatherNodes.symbol.textContent = weather.symbol;
+    weatherNodes.condition.textContent = weather.label;
+    weatherNodes.range.textContent = `Today: high ${Math.round(weather.high)}° · low ${Math.round(weather.low)}°`;
+    weatherNodes.feels.textContent = `${Math.round(weather.feelsLike)}°C`;
+    weatherNodes.humidity.textContent = `${Math.round(weather.humidity)}%`;
+    weatherNodes.wind.textContent = `${Math.round(weather.wind)} km/h`;
+    weatherNodes.rain.textContent = `${weather.precipitation.toFixed(1)} mm`;
+    weatherNodes.values.hidden = false;
+    weatherNodes.status.textContent = `Conditions as of ${weather.updatedLocal.slice(11, 16)} (farm local time) · weather model estimate.`;
+  } catch (error) {
+    if (token !== weatherSequence) return;
+    weatherNodes.values.hidden = true;
+    weatherNodes.status.textContent = navigator.onLine
+      ? "Today's weather is unavailable right now. Retry without losing your crop results."
+      : "You're offline. Live weather requires a connection.";
+  } finally {
+    if (token === weatherSequence) {
+      weatherPending = false;
+      weatherNodes.refresh.disabled = false;
+    }
+  }
+}
+
+// Reverse-geocode only after explicit location permission. Weather works even
+// if the place-name lookup fails; the coordinate label is retained.
+async function reverseLocation(point) {
+  const url = new URL("https://nominatim.openstreetmap.org/reverse");
+  url.search = new URLSearchParams({
+    lat: String(point.latitude),
+    lon: String(point.longitude),
+    zoom: "10",
+    addressdetails: "1",
+    format: "json"
+  }).toString();
+  try {
+    const response = await fetch(url.toString(), { cache: "no-store", credentials: "omit" });
+    if (!response.ok) return null;
+    const result = await response.json();
+    const address = result?.address;
+    if (!address || typeof address !== "object") return null;
+    const place = address.city || address.town || address.village ||
+      address.municipality || address.county || address.state;
+    return typeof place === "string" && typeof address.country === "string"
+      ? `${place}, ${address.country}`
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+weatherNodes.refresh.addEventListener("click", () => {
+  if (weatherLocation) void loadWeather(weatherLocation, weatherPlace, true);
+});
+resetWeather();
+
 locationButton.addEventListener("click", () => {
+  const selected = ++selectionSequence;
+  selectedCoordinates = null;
+  resetWeather("Waiting for your location permission…");
   if (!navigator.geolocation) {
     selectedCoordinates = null;
     addressInput.focus();
@@ -201,6 +336,7 @@ locationButton.addEventListener("click", () => {
   locationError.hidden = true;
   navigator.geolocation.getCurrentPosition(
     (position) => {
+      if (selected !== selectionSequence) return;
       selectedCoordinates = {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude
@@ -208,18 +344,32 @@ locationButton.addEventListener("click", () => {
       addressInput.value = "";
       addressInput.placeholder = `Location ready (${selectedCoordinates.latitude.toFixed(3)}, ${selectedCoordinates.longitude.toFixed(3)})`;
       locationButton.disabled = false;
+      void loadWeather(selectedCoordinates, coordinateLabel(selectedCoordinates));
+      void reverseLocation(selectedCoordinates).then(place => {
+        if (place && selected === selectionSequence && weatherLocation) {
+          weatherPlace = place;
+          weatherNodes.location.textContent = place;
+        }
+      });
     },
     (error) => {
+      if (selected !== selectionSequence) return;
       selectedCoordinates = null;
       locationButton.disabled = false;
       locationError.textContent = messageForLocationError(error);
       locationError.hidden = false;
+      resetWeather("Weather requires a location. Enter an address or try again.");
     },
     { enableHighAccuracy: false, maximumAge: 60_000, timeout: 12_000 }
   );
 });
 
 addressInput.addEventListener("input", () => {
+  selectionSequence++;
+  // Editing while GPS is pending invalidates its callbacks: re-enable the
+  // button unless an active crop request owns the busy state.
+  if (form.getAttribute("aria-busy") !== "true") locationButton.disabled = false;
+  resetWeather();
   selectedCoordinates = null;
   locationError.hidden = true;
   addressInput.placeholder = "e.g. district or nearest town";
@@ -229,6 +379,7 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   locationError.hidden = true;
   let location = selectedCoordinates;
+  let place = weatherPlace || (location ? coordinateLabel(location) : "");
   if (!location) {
     const address = addressInput.value.trim();
     if (!address) {
@@ -237,16 +388,23 @@ form.addEventListener("submit", async (event) => {
       addressInput.focus();
       return;
     }
+    const selection = ++selectionSequence;
     setBusy(true);
     showStatus("loading", "Resolving your address", "Looking up your location with OpenStreetMap Nominatim.");
     try {
       location = await geocodeAddress(address);
+      if (selection !== selectionSequence) {
+        setBusy(false);
+        return;
+      }
+      place = address;
     } catch (error) {
       showStatus("error", "Check your location", error.message);
       setBusy(false);
       return;
     }
   }
+  void loadWeather(location, place);
   const sequence = ++requestSequence;
   results.hidden = true;
   recommendationList.replaceChildren();
@@ -278,6 +436,7 @@ form.addEventListener("submit", async (event) => {
 });
 
 window.addEventListener("offline", () => {
+  resetWeather("You're offline. Weather will refresh after you select a location again.");
   requestSequence++;
   results.hidden = true;
   recommendationList.replaceChildren();
@@ -293,6 +452,10 @@ window.addEventListener("online", () => {
 });
 
 window.addEventListener("pageshow", () => {
+  if (navigator.onLine && weatherLocation && weatherFetchedAt &&
+      Date.now() - weatherFetchedAt >= WEATHER_REFRESH_MS) {
+    void loadWeather(weatherLocation, weatherPlace, true);
+  }
   if (!navigator.onLine && hadResults) {
     results.hidden = true;
     recommendationList.replaceChildren();
