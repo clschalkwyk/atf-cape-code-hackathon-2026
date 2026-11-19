@@ -37,3 +37,37 @@ jobs:
           node --check service-worker.js
       - name: Run frontend tests
         run: node --test tests/*.test.mjs
+
+  deployment-images:
+    name: Build and smoke-test both Docker images
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API image
+        run: docker build --file deploy/api.Dockerfile --tag tyala-api:ci .
+      - name: Build static PWA image
+        run: docker build --file deploy/pwa.Dockerfile --tag tyala-pwa:ci .
+      - name: Smoke-test API container
+        run: |
+          docker run -d --name tyala-api -e PORT=8000 -p 8000:8000 tyala-api:ci
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8000/healthz | grep -q '"status":"ok"'; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs tyala-api
+          exit 1
+      - name: Smoke-test PWA container
+        run: |
+          docker run -d --name tyala-pwa -e PORT=8080 -p 8080:8080 tyala-pwa:ci
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8080/ | grep -q 'Tyala Africa'; then
+              curl --fail --silent http://127.0.0.1:8080/service-worker.js | grep -q 'tyala-shell-v10'
+              exit $?
+            fi
+            sleep 1
+          done
+          docker logs tyala-pwa
+          exit 1
