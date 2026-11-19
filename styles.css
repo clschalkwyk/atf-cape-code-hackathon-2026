@@ -127,6 +127,59 @@ input::placeholder { color: var(--muted); }
 .card-foot { margin: 0; color: var(--ink); font-size: 12px; font-weight: 600; }
 .card-foot span { margin-right: 4px; color: var(--orange); }
 
+/* Farmer home: location-specific, model-derived current conditions */
+.farmer-weather {
+  margin: 0 0 27px;
+  padding: 28px 32px 24px;
+  border: 1px solid rgba(42, 40, 34, .12);
+  border-radius: 18px;
+  background: #e9e6db;
+  box-shadow: 0 8px 26px rgba(42, 40, 34, .035);
+}
+.weather-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.weather-date { margin: 0 0 9px; color: var(--muted); font-size: 13px; font-weight: 500; }
+.weather-welcome h2 {
+  margin: 0 0 12px;
+  font: 700 clamp(23px, 3.2vw, 34px)/1.2 "Poppins", "Segoe UI", sans-serif;
+  letter-spacing: -.8px;
+}
+.weather-location { display: flex; align-items: center; gap: 9px; margin: 0; color: var(--green-dark); font-size: 14px; font-weight: 600; }
+.weather-location svg { flex: 0 0 auto; }
+.weather-refresh {
+  flex: 0 0 auto; padding: 8px 13px;
+  border: 1px solid rgba(42, 40, 34, .25); border-radius: 100px;
+  background: transparent; color: var(--green-dark);
+  font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.weather-refresh:disabled { opacity: .45; cursor: not-allowed; }
+.weather-refresh:not(:disabled):hover { background: var(--surface-beige); }
+.weather-values { display: grid; grid-template-columns: minmax(0, 1fr) 1fr; gap: 24px; align-items: center; margin-top: 22px; }
+.weather-now { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.weather-symbol { width: 51px; color: var(--orange); font-size: 45px; line-height: 1; text-align: center; }
+.weather-temp { font: 700 clamp(40px, 5vw, 58px)/1 "Poppins", sans-serif; letter-spacing: -2px; white-space: nowrap; }
+.weather-description { display: grid; gap: 4px; font-size: 14px; font-weight: 600; }
+.weather-description small { color: var(--muted); font-size: 12px; font-weight: 500; }
+.weather-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px 16px; }
+.weather-details p { margin: 0; display: grid; gap: 2px; color: var(--muted); font-size: 12px; }
+.weather-details strong { color: var(--ink); font-size: 14px; }
+.weather-status { margin: 18px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.weather-source { margin: 9px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.weather-source a { color: var(--green-dark); }
+@media (max-width: 720px) {
+  .farmer-weather { padding: 23px 21px; margin-bottom: 19px; }
+  .weather-values { grid-template-columns: 1fr; gap: 18px; }
+  .weather-now { flex-wrap: wrap; }
+  .weather-temp { font-size: 44px; }
+}
+@media (max-width: 420px) {
+  .weather-head { gap: 8px; }
+  .weather-refresh { padding: 7px 9px; font-size: 11px; }
+  .weather-symbol { width: 40px; font-size: 37px; }
+  .weather-now { gap: 9px; }
+  .weather-description { font-size: 12px; }
+  .weather-details { gap: 8px 12px; }
+}
+
 .status-panel {
   display: flex;
   gap: 13px;
