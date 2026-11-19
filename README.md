@@ -20,9 +20,10 @@ API endpoints:
 ## How it works
 
 1. **Place → coordinates, in the browser.** The PWA geocodes an address with OpenStreetMap Nominatim, or reads the device location directly.
-2. **Coordinates → administrative area.** The API maps the point to a HarvestStat-Africa admin-area FNID using the pinned v1.2 boundaries and a standard-library point-in-polygon test.
-3. **Area → historical crop evidence.** A location-only request returns the historically reported crop options for that exact area: `crop_id`, `crop_label`, `record_count`, `seasons_observed` (planting/harvest months per reported season), `evidence_hint` and response-level `notes`.
-4. **Optional single-crop drill-in.** Passing a `crop_id` asks for detail on one crop: planting window, prevalence, confidence band and caveats. When the evidence for that area does not support this assessment, the API answers honestly with a `422` `insufficient_evidence` response instead of inventing a number.
+2. **Local weather for context.** Once a farmer enters a place or grants device location access, the PWA displays a location-based greeting and live model conditions from Open-Meteo: temperature, today's high/low, humidity, wind, feels-like temperature and recent precipitation. Weather is optional and does not affect crop suggestions or the historical evidence API.
+3. **Coordinates → administrative area.** The API maps the point to a HarvestStat-Africa admin-area FNID using the pinned v1.2 boundaries and a standard-library point-in-polygon test.
+4. **Area → historical crop evidence.** A location-only request returns the historically reported crop options for that exact area: `crop_id`, `crop_label`, `record_count`, `seasons_observed` (planting/harvest months per reported season), `evidence_hint` and response-level `notes`.
+5. **Optional single-crop drill-in.** Passing a `crop_id` asks for detail on one crop: planting window, prevalence, confidence band and caveats. When the evidence for that area does not support this assessment, the API answers honestly with a `422` `insufficient_evidence` response instead of inventing a number.
 
 ## Sample request and response
 
@@ -137,3 +138,5 @@ The presentation slides for this project:
 
 - Crop history and boundaries: [HarvestStat Africa](https://github.com/HarvestStat/HarvestStat-Africa), boundaries pinned to release **v1.2**.
 - Address search: [OpenStreetMap Nominatim](https://nominatim.openstreetmap.org/).
+
+- Current weather: [Open-Meteo](https://open-meteo.com/) (CC BY 4.0 data; attribution required). The hosted free tier is for **non-commercial evaluation only**; commercial rollout requires a licensed plan or alternative.
