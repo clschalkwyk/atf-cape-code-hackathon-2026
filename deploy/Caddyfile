@@ -1,0 +1,11 @@
+:{$PORT} {
+    root * /srv
+    encode gzip
+
+    @fresh {
+        path / /index.html /config.js /service-worker.js
+    }
+    header @fresh Cache-Control "no-cache, must-revalidate"
+
+    file_server
+}
