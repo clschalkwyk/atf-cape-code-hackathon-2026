@@ -366,6 +366,9 @@ locationButton.addEventListener("click", () => {
 
 addressInput.addEventListener("input", () => {
   selectionSequence++;
+  // Editing while GPS is pending invalidates its callbacks: re-enable the
+  // button unless an active crop request owns the busy state.
+  if (form.getAttribute("aria-busy") !== "true") locationButton.disabled = false;
   resetWeather();
   selectedCoordinates = null;
   locationError.hidden = true;
