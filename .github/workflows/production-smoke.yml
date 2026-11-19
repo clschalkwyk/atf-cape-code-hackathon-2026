@@ -1,0 +1,87 @@
+name: Tyala production smoke
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-services:
+    name: Verify public PWA and API
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check PWA assets, API health, CORS and crop evidence
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import time
+          import urllib.error
+          import urllib.request
+
+          api = "https://crop-advisory-api-production.up.railway.app"
+          pwa = "https://tyala-africa-pwa-production.up.railway.app"
+          payload = json.dumps({
+              "location": {"latitude": -1.2864, "longitude": 36.8172}
+          }).encode()
+
+          def request(url, *, method="GET", body=None, origin=None):
+              headers = {"Accept": "application/json"}
+              if body is not None:
+                  headers["Content-Type"] = "application/json"
+              if origin:
+                  headers["Origin"] = origin
+              req = urllib.request.Request(url, data=body, method=method, headers=headers)
+              try:
+                  with urllib.request.urlopen(req, timeout=15) as response:
+                      return response.status, response.headers, response.read()
+              except urllib.error.HTTPError as error:
+                  return error.code, error.headers, error.read()
+
+          def verify():
+              status, _, health = request(api + "/healthz")
+              assert status == 200 and json.loads(health)["status"] == "ok", ("health", status, health[:200])
+
+              status, _, html = request(pwa + "/")
+              assert status == 200 and b"app.mjs?v=10" in html, ("PWA HTML", status, html[:200])
+              status, _, worker = request(pwa + "/service-worker.js")
+              assert status == 200 and b"tyala-shell-v10" in worker, ("service worker", status)
+
+              status, _, hidden = request(pwa + "/data/catalog/v1/catalog.json")
+              assert status == 404, ("PWA data exposure", status)
+
+              status, headers, _ = request(api + "/v1/recommendations", method="OPTIONS", origin=pwa)
+              assert status == 204 and headers.get("Access-Control-Allow-Origin") == pwa, ("approved preflight", status, dict(headers))
+              status, headers, body = request(api + "/v1/recommendations", method="POST", body=payload, origin=pwa)
+              response = json.loads(body)
+              assert status == 200 and headers.get("Access-Control-Allow-Origin") == pwa, ("approved request", status, response)
+              assert response["resolved_location"]["fnid"] == "KE2013A147" and len(response["options"]) > 0, ("crop evidence", response)
+              assert headers.get("Cache-Control") == "no-store", ("cache-control", dict(headers))
+
+              for method, body in (("OPTIONS", None), ("POST", payload)):
+                  status, headers, data = request(
+                      api + "/v1/recommendations", method=method, body=body,
+                      origin="https://unapproved.example"
+                  )
+                  assert status == 403 and not headers.get("Access-Control-Allow-Origin"), ("rejected origin", method, status, dict(headers))
+                  assert json.loads(data)["error"]["code"] == "forbidden_origin", ("error code", data[:200])
+              print("PASS: PWA, API, approved CORS, rejected CORS, no sensitive PWA data, and Nairobi crop options")
+
+          # GitHub push and Railway deploy triggers can race: allow the new
+          # container's health check and rollout to settle before verifying.
+          last_error = None
+          for attempt in range(18):
+              try:
+                  verify()
+                  break
+              except (AssertionError, OSError, ValueError, KeyError) as error:
+                  last_error = error
+                  print(f"Attempt {attempt + 1}/18: {error}", flush=True)
+                  if attempt == 17:
+                      raise
+                  time.sleep(10)
+          PY
